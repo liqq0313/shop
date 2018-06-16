@@ -1,0 +1,282 @@
+{include file="../application/index/view/common/top.html" /}
+	<!-- 搜索栏 -->
+	<div class="top-search">
+		<div class="inner">
+			<a class="logo" href="index.html"><img src="__IMG__/icons/logo.jpg" alt="U袋网" class="cover"></a>
+			<div class="search-box">
+				<form class="input-group">
+					<input placeholder="Ta们都在搜U袋网" type="text">
+					<span class="input-group-btn">
+						<button type="button">
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						</button>
+					</span>
+				</form>
+				<p class="help-block text-nowrap">
+					<a href="">连衣裙</a>
+					<a href="">裤</a>
+					<a href="">衬衫</a>
+					<a href="">T恤</a>
+					<a href="">女包</a>
+					<a href="">家居服</a>
+					<a href="">2017新款</a>
+				</p>
+			</div>
+			<div class="cart-box">
+				<a href="udai_shopcart.html" class="cart-but">
+					<i class="iconfont icon-shopcart cr fz16"></i> 购物车 0 件
+				</a>
+			</div>
+		</div>
+	</div>
+	<!-- 首页导航栏 -->
+	<div class="top-nav bg3">
+		<div class="nav-box inner">
+			<div class="all-cat">
+				<div class="title"><i class="iconfont icon-menu"></i> 全部分类</div>
+				<div class="cat-list__box">
+				<script type="text/javascript">
+					$(function(){
+						$.post("{:url('index/category/getCateName')}" ,  
+							function(data)
+							{
+								var showlist = $('.cat-list__box');
+            					showall(data, showlist,0);
+            					$('.cat-list__box').append(showlist);
+							}
+						);	
+					
+
+						function showall(data, parent,flag=0)
+						{
+							for(var child in data){
+								if (flag==0) {
+									var oDiv = $("<div class='cat-box'><div class='title'>"+data[child].name+"</div><ul class='cat-list clearfix'></ul><div class='cat-list__deploy'><div class='deploy-box'></div></div>");
+										oDiv.appendTo(parent);
+
+
+									if(data[child].son.length>0){
+										showall(data[child].son,$('.deploy-box').last(),1);
+									}
+									
+								}else if(flag==2){
+									
+									var oA = $("<a>"+data[child].name+"</a>");
+									oA.attr('href' , "{:url('index/item/show')}?id="+data[child].id);
+									oA.appendTo(parent);
+								}else if(flag==1){
+									
+									var oA = $("<li>"+data[child].name+"</li>");
+									oA.appendTo(parent.parent().prev());
+
+									var oDiv = $("<div class='genre-box clearfix'><span class='title'>"+data[child].name+"</span><div class='genre-list'></div></div>");
+									
+									oDiv.appendTo(parent);
+
+									if(data[child].son.length>0){
+										
+										showall(data[child].son,$('.genre-list').last(),2);
+									}
+								}
+
+							}
+						}
+					});
+				</script>
+				</div>
+			</div>
+			<ul class="nva-list">
+				<a href="index.html"><li class="active">首页</li></a>
+				<a href="temp_article/udai_article10.html"><li>企业简介</li></a>
+				<a href="temp_article/udai_article5.html"><li>新手上路</li></a>
+				<a href="class_room.html"><li>U袋学堂</li></a>
+				<a href="enterprise_id.html"><li>企业账号</li></a>
+				<a href="udai_contract.html"><li>诚信合约</li></a>
+				<a href="item_remove.html"><li>实时下架</li></a>
+			</ul>
+			<div class="user-info__box">
+				<div class="login-box">
+					<div class="avt-port">
+						<img src="__IMG__/icons/default_avt.png" alt="欢迎来到U袋网" class="cover b-r50">
+					</div>
+					{if $isLogin}
+					<!-- 已登录 -->
+					<div class="name c6">Hi~ <span class="cr">18759808122</span></div>
+					<div class="point c6">积分: 30</div>
+					<div class="report-box">
+						<span class="badge">+30</span>
+						<a class="btn btn-info btn-block disabled" href="#" role="button">已签到1天</a>
+						<!-- 	<a class="btn btn-primary btn-block" href="#" role="button">签到领积分</a> -->
+					</div>
+					{else}
+					<!-- 未登录 -->
+					<div class="name c6">Hi~ 你好</div>
+					<div class="point c6"><a href="{:url('index/auth/login')}">点此登录</a>，发现更多精彩</div>	{/if}
+				</div>
+				<div class="agent-box">
+					<a href="#" class="agent">
+						<i class="iconfont icon-fushi"></i>
+						<p>申请网店代销</p>
+					</a>
+					<a href="javascript:;" class="agent">
+						<i class="iconfont icon-agent"></i>
+						<p><span class="cr">9527</span>位代销商</p>
+					</a>
+				</div>
+				<div class="verify-qq">
+					<div class="title">
+						<i class="fake"></i>
+						<span class="fz12">真假QQ客服验证-远离骗子</span>
+					</div>
+					<form class="input-group">
+						<input class="form-control" placeholder="输入客服QQ号码" type="text">
+						<span class="input-group-btn">
+							<button class="btn btn-primary submit" id="verifyqq" type="button">验证</button>
+						</span>
+					</form>
+					<script>
+						$(function() {
+							$('#verifyqq').click(function() {
+								DJMask.open({
+								　　width:"400px",
+								　　height:"150px",
+								　　title:"U袋网提示您：",
+								　　content:"<b>该QQ不是客服-谨防受骗！</b>"
+							　　});
+							});
+						});
+					</script>
+				</div>
+				<div class="tags">
+					<div class="tag"><i class="iconfont icon-real fz16"></i> 品牌正品</div>
+					<div class="tag"><i class="iconfont icon-credit fz16"></i> 信誉认证</div>
+					<div class="tag"><i class="iconfont icon-speed fz16"></i> 当天发货</div>
+					<div class="tag"><i class="iconfont icon-tick fz16"></i> 人工质检</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 顶部轮播 -->
+    <div class="swiper-container banner-box">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><a href="{:url('index/item/show')}"><img src="__IMG__/slider/banner_1.jpg" class="cover"></a></div>
+            <div class="swiper-slide"><a href="{:url('index/item/show')}"><img src="__IMG__/slider/banner_2.jpg" class="cover"></a></div>
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+    <!-- 首页楼层导航 -->
+	<nav class="floor-nav visible-lg-block">
+		<span class="scroll-nav">女装</span>
+		<span class="scroll-nav">男装</span>
+		<span class="scroll-nav">活力童装</span>
+		<span class="scroll-nav">时尚包包</span>
+		<span class="scroll-nav">鞋靴</span>
+	</nav>
+	<!-- 楼层内容 -->
+	<div class="content inner" style="margin-bottom: 40px;">
+		<section class="scroll-floor floor-2">
+			<div class="floor-title">
+				<i class="iconfont icon-skirt fz16"></i> 女装
+				<div class="case-list fz0 pull-right">
+					<a href="item_category.html">高端女装</a>
+					<a href="item_category.html">时尚女装</a>
+					<a href="item_category.html">上装</a>
+					<a href="item_category.html">下装</a>
+					<a href="item_category.html">裙装</a>
+					<a href="item_category.html">内衣</a>
+				</div>
+			</div>
+			<div class="con-box">
+				<a class="left-img hot-img" href="">
+					<img src="__IMG__/floor_2.jpg" alt="" class="cover">
+				</a>
+				<div class="right-box">
+					<a href="item_show.html" class="floor-item">
+						<div class="item-img hot-img">
+							<img src="__IMG__/temp/S-001.jpg" alt="纯色圆领短袖T恤活a动衫弹" class="cover">
+						</div>
+						<div class="price clearfix">
+							<span class="pull-left cr fz16">￥18.0</span>
+							<span class="pull-right c6">进货价</span>
+						</div>
+						<div class="name ep" title="纯色圆领短袖T恤活a动衫弹力柔软">纯色圆领短袖T恤活a动衫弹力柔软</div>
+					</a>
+					<a href="item_show.html" class="floor-item">
+						<div class="item-img hot-img">
+							<img src="__IMG__/temp/S-002.jpg" alt="纯色圆领短袖T恤活a动衫弹" class="cover">
+						</div>
+						<div class="price clearfix">
+							<span class="pull-left cr fz16">￥18.0</span>
+							<span class="pull-right c6">进货价</span>
+						</div>
+						<div class="name ep" title="纯色圆领短袖T恤活a动衫弹力柔软">纯色圆领短袖T恤活a动衫弹力柔软</div>
+					</a>
+					
+				</div>
+			</div>
+		</section>
+	</div>
+	<script>
+		$(function(){ 
+			// 顶部banner轮播
+			var banner_swiper = new Swiper('.banner-box', {
+				autoplayDisableOnInteraction : false,
+				pagination: '.banner-box .swiper-pagination',
+				paginationClickable: true,
+				autoplay : 5000,
+			});
+			// 新闻列表滚动
+			var notice_swiper = new Swiper('.notice-box .swiper-container', {
+				paginationClickable: true,
+				mousewheelControl : true,
+				direction : 'vertical',
+				slidesPerView : 10,
+				autoplay : 2e3,
+			});
+			// 楼层导航自动 active
+			//$.scrollFloor();
+			// 页面下拉固定楼层导航
+			//$('.floor-nav').smartFloat();
+			//$('.to-top').toTop({position:false});
+		});
+	</script>
+	<!-- 右侧菜单 -->
+	<div class="right-nav">
+		<ul class="r-with-gotop">
+			<li class="r-toolbar-item">
+				<a href="udai_welcome.html" class="r-item-hd">
+					<i class="iconfont icon-user"></i>
+					<div class="r-tip__box"><span class="r-tip-text">用户中心</span></div>
+				</a>
+			</li>
+			<li class="r-toolbar-item">
+				<a href="udai_shopcart.html" class="r-item-hd">
+					<i class="iconfont icon-cart" data-badge="10"></i>
+					<div class="r-tip__box"><span class="r-tip-text">购物车</span></div>
+				</a>
+			</li>
+			<li class="r-toolbar-item">
+				<a href="udai_collection.html" class="r-item-hd">
+					<i class="iconfont icon-aixin"></i>
+					<div class="r-tip__box"><span class="r-tip-text">我的收藏</span></div>
+				</a>
+			</li>
+			<li class="r-toolbar-item">
+				<a href="" class="r-item-hd">
+					<i class="iconfont icon-liaotian"></i>
+					<div class="r-tip__box"><span class="r-tip-text">联系客服</span></div>
+				</a>
+			</li>
+			<li class="r-toolbar-item">
+				<a href="issues.html" class="r-item-hd">
+					<i class="iconfont icon-liuyan"></i>
+					<div class="r-tip__box"><span class="r-tip-text">留言反馈</span></div>
+				</a>
+			</li>
+			<li class="r-toolbar-item to-top">
+				<i class="iconfont icon-top"></i>
+				<div class="r-tip__box"><span class="r-tip-text">返回顶部</span></div>
+			</li>
+		</ul>
+	</div>
+{include file='../application/index/view/common/footer.html'}

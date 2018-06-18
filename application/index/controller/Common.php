@@ -9,7 +9,7 @@ class Common
 		{
 			if($v[$pid] == $root)
 			{
-				$v['son'] = self::getTree($data , $v[$pk]);
+				$v['son'] = self::getTree($data , $v[$pk] , $pk , $pid);
 				$tree[] = $v;
 			}
 		}

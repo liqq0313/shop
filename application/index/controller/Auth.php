@@ -16,6 +16,7 @@ class Auth extends Controller
 		$this->is_login = session('?user');
 		if ($this->is_login) {
 			$this->assign('username' , session('user')['username']);
+			$this->assign('grade' , session('user')['grade']);
 		}
 
 		$this->assign('isLogin' , $this->is_login);

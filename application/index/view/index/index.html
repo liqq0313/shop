@@ -37,7 +37,7 @@
 				<div class="cat-list__box">
 				<script type="text/javascript">
 					$(function(){
-						/*$.post("{:url('index/category/getCateName')}" ,  
+						$.post("{:url('index/category/getCateName')}" ,  
 							function(data)
 							{
 								var showlist = $('.cat-list__box');
@@ -80,7 +80,7 @@
 								}
 
 							}
-						}*/
+						}
 					});
 				</script>
 				</div>
@@ -102,19 +102,19 @@
 					{if $isLogin}
 					<!-- 已登录 -->
 					<div class="name c6">Hi~ <span class="cr">{$username}</span></div>
-					<div class="point c6">积分: 30</div>
-					<div class="report-box">
+					<div class="point c6">积分: {$grade}</div>
+					<!-- <div class="report-box">
 						<span class="badge">+30</span>
 						<a class="btn btn-info btn-block disabled" href="#" role="button">已签到1天</a>
-						<!-- 	<a class="btn btn-primary btn-block" href="#" role="button">签到领积分</a> -->
-					</div>
+							<a class="btn btn-primary btn-block" href="#" role="button">签到领积分</a> 
+					</div> -->
 					{else}
 					<!-- 未登录 -->
 					<div class="name c6">Hi~ 你好</div>
 					<div class="point c6"><a href="{:url('index/auth/login')}">点此登录</a>，发现更多精彩</div>	
 					{/if}
 				</div>
-				<div class="agent-box">
+				<!-- <div class="agent-box">
 					<a href="#" class="agent">
 						<i class="iconfont icon-fushi"></i>
 						<p>申请网店代销</p>
@@ -153,15 +153,15 @@
 					<div class="tag"><i class="iconfont icon-credit fz16"></i> 信誉认证</div>
 					<div class="tag"><i class="iconfont icon-speed fz16"></i> 当天发货</div>
 					<div class="tag"><i class="iconfont icon-tick fz16"></i> 人工质检</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</div>
 	<!-- 顶部轮播 -->
     <div class="swiper-container banner-box">
         <div class="swiper-wrapper">
-            <div class="swiper-slide"><a href="{:url('index/item/show')}"><img src="__IMG__/slider/banner_1.jpg" class="cover"></a></div>
-            <div class="swiper-slide"><a href="{:url('index/item/show')}"><img src="__IMG__/slider/banner_2.jpg" class="cover"></a></div>
+            <!-- <div class="swiper-slide"><a href="{:url('index/item/show')}"><img src="__IMG__/slider/banner_1.jpg" class="cover"></a></div>
+            <div class="swiper-slide"><a href="{:url('index/item/show')}"><img src="__IMG__/slider/banner_2.jpg" class="cover"></a></div> -->
         </div>
         <div class="swiper-pagination"></div>
     </div>
@@ -175,7 +175,7 @@
 	</nav>
 	<!-- 楼层内容 -->
 	<div class="content inner" style="margin-bottom: 40px;">
-		<section class="scroll-floor floor-2">
+		<!-- <section class="scroll-floor floor-1">
 			<div class="floor-title">
 				<i class="iconfont icon-skirt fz16"></i> 女装
 				<div class="case-list fz0 pull-right">
@@ -215,17 +215,44 @@
 					
 				</div>
 			</div>
-		</section>
+		</section> -->
 	</div>
 	<script>
 		$(function(){ 
 			// 顶部banner轮播
-			var banner_swiper = new Swiper('.banner-box', {
-				autoplayDisableOnInteraction : false,
-				pagination: '.banner-box .swiper-pagination',
-				paginationClickable: true,
-				autoplay : 5000,
-			});
+			$.post("{:url('index/Pluginsslider/getSlider')}" ,  
+					function(data)
+					{
+						for(var child in data){
+							var oDiv = $("<div class='swiper-slide'></div>");
+
+							var oA = $("<a href=''></a>")
+							var oImg = $("<img  class='cover'>");
+							oA.attr('href' , "{:url('index/item/show')}?id="+data[child].goods_id);
+							oImg.attr('src' , "__IMG__/"+data[child].image);
+
+							oA.append(oImg);
+							oDiv.append(oA);
+							oDiv.appendTo($('.swiper-wrapper'));
+						}
+
+						var banner_swiper = new Swiper('.banner-box', {
+							autoplayDisableOnInteraction : false,
+							pagination: '.banner-box .swiper-pagination',
+							paginationClickable: true,
+							autoplay : 5000,
+							/*//前进后退按钮
+							navigation: {
+					    		nextEl: '.swiper-button-next',
+					     		prevEl: '.swiper-button-prev',
+					    	}*/	
+						});
+						
+					}
+				);
+
+
+			
 			// 新闻列表滚动
 			var notice_swiper = new Swiper('.notice-box .swiper-container', {
 				paginationClickable: true,
@@ -239,6 +266,9 @@
 			// 页面下拉固定楼层导航
 			//$('.floor-nav').smartFloat();
 			//$('.to-top').toTop({position:false});
+
+			//楼层内容
+			$.post('');
 		});
 	</script>
 	<!-- 右侧菜单 -->

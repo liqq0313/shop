@@ -101,7 +101,7 @@
 					</div>
 					{if $isLogin}
 					<!-- 已登录 -->
-					<div class="name c6">Hi~ <span class="cr">18759808122</span></div>
+					<div class="name c6">Hi~ <span class="cr">{$username}</span></div>
 					<div class="point c6">积分: 30</div>
 					<div class="report-box">
 						<span class="badge">+30</span>
@@ -111,7 +111,8 @@
 					{else}
 					<!-- 未登录 -->
 					<div class="name c6">Hi~ 你好</div>
-					<div class="point c6"><a href="{:url('index/auth/login')}">点此登录</a>，发现更多精彩</div>	{/if}
+					<div class="point c6"><a href="{:url('index/auth/login')}">点此登录</a>，发现更多精彩</div>	
+					{/if}
 				</div>
 				<div class="agent-box">
 					<a href="#" class="agent">

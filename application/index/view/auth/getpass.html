@@ -4,13 +4,14 @@
 	<meta charset="UTF-8">
 	<link rel="shortcut icon" href="favicon.ico">
 	<link rel="stylesheet" href="__CSS__/iconfont.css">
-	<link rel="stylesheet" href="__CSS__/global.css">
+	<!-- <link rel="stylesheet" href="__CSS__/global.css"> -->
 	<link rel="stylesheet" href="__CSS__/bootstrap.min.css">
 	<link rel="stylesheet" href="__CSS__/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="__CSS__/login.css">
 	<script src="__JS__/jquery.1.12.4.min.js" charset="UTF-8"></script>
 	<script src="__JS__/bootstrap.min.js" charset="UTF-8"></script>
-	<script src="__JS__/jquery.form.js" charset="UTF-8"></script>
+	<script src="__JS__/jquery.cookie.js"></script>
+	<!-- <script src="__JS__/jquery.form.js" charset="UTF-8"></script> -->
 	<title>U袋网 - 找回密码</title>
 </head>
 <body>
@@ -24,7 +25,7 @@
   					<h2>找回密码<a href="{:url('index/auth/login')}" class="pull-right fz16">返回登录</a></h2>
   				</div>
   				<div class="tabs_container">
-					<form class="tabs_form" action="https://rpg.blue/member.php?mod=logging&action=login" method="post" id="resetpwd_form">
+					<form class="tabs_form" action="" method="post" id="resetpwd_form">
 						<div class="form-group">
 							<div class="input-group">
 								<div class="input-group-addon">
@@ -37,7 +38,7 @@
 							<div class="input-group">
 								<input class="form-control" name="sms" id="resetpwd_sms" placeholder="输入验证码" type="text">
 								<span class="input-group-btn">
-									<button class="btn btn-primary getsms" type="button">发送短信验证码</button>
+									<button class="btn btn-primary getsms" type="button" id="sendsms">发送短信验证码</button>
 								</span>
 							</div>
 						</div>
@@ -51,12 +52,12 @@
 							</div>
 						</div>
 	                    <!-- 错误信息 -->
-						<div class="form-group">
+						<!-- <div class="form-group">
 							<div class="error_msg" id="resetpwd_error"></div>
-						</div>
+						</div> -->
 	                    <button class="btn btn-large btn-primary btn-lg btn-block submit" id="resetpwd_submit" type="button">重置密码</button>
                     </form>
-                    <div class="tabs_div">
+                    <!-- <div class="tabs_div">
 	                    <div class="success-box">
 	                    	<div class="success-msg">
 								<i class="success-icon"></i>
@@ -72,7 +73,7 @@
 								<a role="button" href="login.html" class="btn btn-block btn-lg btn-info">返回登陆</a>
 	                    	</div>
 	                    </div>
-                    </div>
+                    </div> -->
                 </div>
 			</div>
 		</div>
@@ -93,3 +94,127 @@
 	</div>
 </body>
 </html>
+<script type="text/javascript">
+	//找回密码
+	$('#resetpwd_submit').click(function(){
+		var resPhone = isPhoneNum();
+		var yzm = $.trim($("#resetpwd_sms").val());
+		var pwd = $.trim($("#resetpwd_pwd").val());
+
+		if (!resPhone) {return;}
+		if (yzm.length!=4) {
+			alert('请输入正确的验证码');
+			return;
+		}
+
+		if (pwd.length<6||pwd.length>10) {
+			alert('请输入6-10位的密码');
+			return;
+		}
+
+		$.post("{:url('index/auth/doGetPass')}",
+			{"phone":$("#resetpwd_phone").val(),
+				"yzm":yzm,
+				"pwd":pwd
+			},function(data){
+				if (data['status']) {
+					alert(data['msg']);
+					$(location).attr('href' , data['url']);
+				}else{
+					alert(data['msg']);
+				}
+
+				$("#resetpwd_sms").val('');
+				$("#resetpwd_pwd").val('');
+				$("#resetpwd_phone").val('');
+				$("#resetpwd_phone").focus();
+			}
+		);
+	});
+
+	v = getCookieValue("secondsremained");//获取cookie值
+	if(v>0){
+		settime($("#sendsms"));//开始倒计时
+	}
+
+	//发送短信验证码
+	$('#sendsms').click(function(){
+		sendCode($("#sendsms"));
+	});
+
+
+	//发送验证码时添加cookie
+function addCookie(name,value,expiresHours){
+//判断是否设置过期时间,0代表关闭浏览器时失效
+	if(expiresHours>0){
+		var date=new Date();
+		date.setTime(date.getTime()+expiresHours*1000);
+		$.cookie(name, escape(value), {expires: date});
+	}else{
+		$.cookie(name, escape(value));
+		//$.cookie(name, null);
+	}
+}
+//修改cookie的值
+function editCookie(name,value,expiresHours){
+	if(expiresHours>0){
+		var date=new Date();
+		date.setTime(date.getTime()+expiresHours*1000); //单位是毫秒
+		$.cookie(name, escape(value), {expires: date});
+	} else{
+		$.cookie(name, escape(value));
+		//$.cookie(name, null);
+	}
+}
+//根据名字获取cookie的值
+function getCookieValue(name){
+	return $.cookie(name);
+}
+
+//发送验证码
+function sendCode(obj){
+	var phonenum = $("#resetpwd_phone").val();
+	var result = isPhoneNum();
+	if(result){
+		doPostBack("{:url('index/auth/sendPhone')}",{"phone":phonenum});
+		addCookie("secondsremained",5,5);//添加cookie记录,有效时间60s
+		settime(obj);//开始倒计时
+	}
+}
+
+function doPostBack(url,param){
+	$.post(url,param,function(data){
+		if (data['status']) {
+			alert('发送短信成功，请查收');
+		}
+	});
+}
+//开始倒计时
+var countdown;
+function settime(obj) {
+	countdown=getCookieValue("secondsremained");
+		if (countdown == undefined) {
+		obj.removeAttr("disabled");
+		obj.html("发送短信验证码");
+		editCookie("secondsremained",countdown,-1);
+		return;
+	} else {
+		obj.attr("disabled", true);
+		obj.html("重新发送(" + countdown + ")");
+		countdown--;
+		editCookie("secondsremained",countdown,countdown+1);
+	}
+	setTimeout(function() { settime(obj) },1000) //每1000毫秒执行一次
+}
+//校验手机号是否合法
+function isPhoneNum(){
+	var phonenum = $("#resetpwd_phone").val();
+	var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(16[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+	if(!myreg.test(phonenum)){
+		alert('请输入有效的手机号码！');
+		return false;
+	}else{
+		return true;
+	}
+}
+</script>

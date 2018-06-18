@@ -2,19 +2,17 @@
 namespace app\index\controller;
 class User extends Auth
 {	
+	//没有登录状态自动跳转到登录界面
+	protected $is_check_login = ['*'];
 	//个人中心-我的u袋-欢迎页
 	public function welcome()
 	{
-		//$this->checkLogin();
-
 		return $this->fetch();
 	}
 
 	//我的订单
 	public function order()
 	{
-		//$this->checkLogin();
-
 		return $this->fetch();
 	}
 

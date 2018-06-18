@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="__CSS__/login.css">
 	<script src="__JS__/jquery.1.12.4.min.js" charset="UTF-8"></script>
 	<script src="__JS__/bootstrap.min.js" charset="UTF-8"></script>
-	<script src="__JS__/jquery.form.js" charset="UTF-8"></script>
+	<!-- <script src="__JS__/jquery.form.js" charset="UTF-8"></script> -->
 	
 	<title>U袋网 - 登录</title>
 </head>
@@ -80,6 +80,23 @@
 			alert('手机号或密码不能为空');
 			return;
 		}
+
+		$.post("{:url('index/auth/doLogin')}",
+			{"phone":phone,
+				"pwd":pwd
+			},function(data){
+				if (data['status']) {
+					alert(data['msg']);
+					$(location).attr('href' , data['url']);
+				}else{
+					alert(data['msg']);
+				}
+
+				$("#login_phone").val('');
+				$("#login_pwd").val('');
+				$("#login_phone").focus();
+			}
+		);
 		
 	});
 </script>

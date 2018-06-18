@@ -26,8 +26,13 @@
 				<a href="temp_article/udai_article4.html">帮助中心</a>
 			</div>
 			<div class="pull-right">
+				{if $isLogin}
+				<span>欢迎&nbsp;{$username}</span></a>
+				<a href="{:url('index/auth/loginout')}">退出</a>
+				{else}
 				<a href="{:url('index/auth/login')}"><span class="cr">登录</span></a>
 				<a href="{:url('index/auth/register')}">注册</a>
+				{/if}
 				<a href="{:url('index/user/welcome')}">我的U袋</a>
 				<a href="{:url('index/user/order')}">我的订单</a>
 				<a href="{:url('index/info/integral')}">积分平台</a>

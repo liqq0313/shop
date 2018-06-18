@@ -160,9 +160,9 @@ class Auth extends Controller
 
 		//70字内（含70字）计一条，超过70字，按67字/条计费，超过长度短信平台将会自动分割为多条发送。分割后的多条短信将按照具体占用条数计费。
 
-		$res = $this->ucpass->SendSms($appid,$templateid,$param,$mobile,$uid);
+		//$res = $this->ucpass->SendSms($appid,$templateid,$param,$mobile,$uid);
 
-		return json($res);
+		$res = 'OK';
 		if (substr_count($res, 'OK')) {
 			session('phone' , $_POST['phone']);
 			session('yzm' , $yzm);

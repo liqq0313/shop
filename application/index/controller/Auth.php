@@ -51,11 +51,6 @@ class Auth extends Controller
 		$this->success('您退出成功，将以游客身份重新浏览' , 'index/index/index');
 	}
 
-	public function test()
-	{
-		var_dump(session('user'));
-		var_dump(session('yzm'));
-	}
 	public function login()
 	{
 		if ($this->is_login) {
@@ -127,7 +122,7 @@ class Auth extends Controller
 		$data['login_count'] = 1;
 		$data['create_time'] = time();
 		$data['update_time'] = time();
-
+		$data['grade'] = 0;
 
 		$result = User::create($data);
 
@@ -161,9 +156,7 @@ class Auth extends Controller
 
 		//70字内（含70字）计一条，超过70字，按67字/条计费，超过长度短信平台将会自动分割为多条发送。分割后的多条短信将按照具体占用条数计费。
 
-		//$res = $this->ucpass->SendSms($appid,$templateid,$param,$mobile,$uid);
-
-		$res = 'OK';
+		$res = $this->ucpass->SendSms($appid,$templateid,$param,$mobile,$uid);
 		if (substr_count($res, 'OK')) {
 			session('phone' , $_POST['phone']);
 			session('yzm' , $yzm);

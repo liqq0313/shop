@@ -17,7 +17,7 @@ return [
     // 应用调试模式
     'app_debug'              => true,
     // 应用Trace
-    'app_trace'              => true,
+    'app_trace'              => false,
     // 应用模式状态
     'app_status'             => '',
     // 是否支持多模块
@@ -142,7 +142,8 @@ return [
     'view_replace_str'       => [
         '__CSS__' => '/static/css',
         '__IMG__' => '/static/images',
-        '__JS__' => '/static/js'
+        '__JS__' => '/static/js',
+        '__ADMIN__' =>'/static/admin',
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',

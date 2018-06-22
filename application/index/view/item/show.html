@@ -343,7 +343,9 @@
 											"url":"getDetail",
 											"dataType":"json",
 											"async":true,
-											"data":{'$goods_id':{$goods->goods_id}},
+											"data":{
+												'goods_id':{$goods->goods_id}
+												},
 											"success":function(data){
 												
 											}

@@ -81,9 +81,9 @@ class Item extends Auth
 			$find['quantity'] = input('post.quantity');
 			$result = Cart::create($find);
 			if($result){
-				return ['status'=>1,'msg'=>'添加成功'];
+				return json(['status'=>1,'msg'=>'添加成功']);
 			}else{
-				return ['status'=>0,'msg'=>'添加失败'];
+				return json(['status'=>0,'msg'=>'添加失败']);
 			}
 
 		}else{
@@ -91,9 +91,9 @@ class Item extends Auth
 			$addnum = $quantity = $get_cart->quantity+$buy_num;
 			$result = Cart::where('cart_id',$cart_id)->update(['quantity'=>$addnum]);
 			if($result){
-				return ['status'=>1,'msg'=>'添加成功'];
+				return json(['status'=>1,'msg'=>'添加成功']);
 			}else{
-				return ['status'=>0,'msg'=>'添加失败'];
+				return json(['status'=>0,'msg'=>'添加失败']);
 			}
 		}
 
@@ -101,6 +101,7 @@ class Item extends Auth
 	//获取产品的详细描述图
 	public function getDetail()
 	{
-		
+		//$gid = input('post.gid');;
+		//echo $gid;
 	}
 }

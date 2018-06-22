@@ -1,7 +1,6 @@
 <?php
 namespace app\index\model;
 use think\Model;
-use app\index\model\GoodsCategory;
 class Goods extends Model
 {
 	public function category()

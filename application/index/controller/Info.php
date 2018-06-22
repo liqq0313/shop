@@ -196,9 +196,9 @@ class Info extends Auth
 			$res = $user->save();
 		}
 		if($res){
-			return ['status'=>1,'msg'=>'修改成功'];
+			return json(['status'=>1,'msg'=>'修改成功']);
 		}else{
-			return ['status'=>0,'msg'=>'修改失败'];
+			return json(['status'=>0,'msg'=>'修改失败']);
 		}
 	}
 	//优惠劵

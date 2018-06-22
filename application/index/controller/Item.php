@@ -6,6 +6,7 @@ use app\index\model\GoodsCategory;
 use app\index\model\Comment;
 use app\index\model\GoodsImage;
 use app\index\model\Cart;
+use app\index\model\GoodsDetail;
 class Item extends Auth
 {
 	public function show()
@@ -101,7 +102,11 @@ class Item extends Auth
 	//获取产品的详细描述图
 	public function getDetail()
 	{
-		//$gid = input('post.gid');;
-		//echo $gid;
+		$goods_id = input('post.goods_id');
+		$img = GoodsDetail::all(function($query){
+			$query->where('goods_id',$goods_id)->order('sort','asc');
+		});
+		var_dump($img);
+		//return json($img);
 	}
 }

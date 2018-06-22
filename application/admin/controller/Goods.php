@@ -82,10 +82,10 @@ class Goods extends Auth
 		    }
 		    $info = $file->move($filePaths);
 		    if($info){
-		        $imgpath = 'upload/'.$filePath.'/'.$info->getSaveName();
+		        $imgpath = 'static/upload/'.$filePath.'/'.$info->getSaveName();
 		        $imgpath = str_replace("\\", "/", $imgpath);
 		        $image = \think\Image::open($imgpath);
-		        $date_path = 'upload/'.$filePath.'/thumb/180';
+		        $date_path = 'static/upload/'.$filePath.'/thumb/180';
 		        if(!file_exists($date_path)){
 		          mkdir($date_path,0777,true);
 		        }

@@ -228,7 +228,7 @@
 
 							var oA = $("<a href=''></a>")
 							var oImg = $("<img  class='cover'>");
-							oA.attr('href' , "{:url('index/item/show')}?id="+data[child].goods_id);
+							oA.attr('href' , "{:url('index/item/show')}?gid="+data[child].goods_id);
 							oImg.attr('src' , "__IMG__/"+data[child].image);
 
 							oA.append(oImg);

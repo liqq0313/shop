@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+	<meta charset="UTF-8">
+	<link rel="shortcut icon" href="favicon.ico">
+	<link rel="stylesheet" href="__CSS__/iconfont.css">
+	<link rel="stylesheet" href="__CSS__/global.css">
+	<link rel="stylesheet" href="__CSS__/bootstrap.min.css">
+	<link rel="stylesheet" href="__CSS__/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="__CSS__/swiper.min.css">
+	<link rel="stylesheet" href="__CSS__/styles.css">
+	<script src="__JS__/jquery.1.12.4.min.js" charset="UTF-8"></script>
+	<script src="__JS__/bootstrap.min.js" charset="UTF-8"></script>
+	<script src="__JS__/swiper.min.js" charset="UTF-8"></script>
+	<!-- <script src="__JS__/global.js" charset="UTF-8"></script> -->
+	<script src="__JS__/jquery.DJMask.2.1.1.js" charset="UTF-8"></script>
+	<title>U袋网</title>
+</head>
+<body>
+	<!-- 顶部tab -->
+	<div class="tab-header">
+		<div class="inner">
+			<div class="pull-left">
+				<div class="pull-left">嗨，欢迎来到<a style="margin-left:0;" href="{:url('index/index/index')}" ><span class="cr">U袋网</span></a></div>
+				<a href="agent_level.html">网店代销</a>
+				<a href="temp_article/udai_article4.html">帮助中心</a>
+			</div>
+			<div class="pull-right">
+				{if $isLogin}
+				<span>欢迎&nbsp;{$username}</span></a>
+				<a href="{:url('index/auth/loginout')}">退出</a>
+				{else}
+				<a href="{:url('index/auth/login')}"><span class="cr">登录</span></a>
+				<a href="{:url('index/auth/register')}">注册</a>
+				{/if}
+				<a href="{:url('index/user/welcome')}">我的U袋</a>
+				<a href="{:url('index/user/order')}">我的订单</a>
+				<a href="{:url('index/info/integral')}">积分平台</a>
+			</div>
+		</div>
+	</div>

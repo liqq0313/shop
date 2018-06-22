@@ -26,7 +26,7 @@ class Goods extends Auth
 		$param = $request->param();
 
 		$goods = GoodsModel::get($param['id']);
-		$goods['thumb'] = resize($goods['image'] , 360);
+		//$goods['thumb'] = resize($goods['image'] , 360);
 		$this->assign('title' , '编辑');
 		$this->assign('goods' , $goods);
 		

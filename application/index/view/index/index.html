@@ -160,19 +160,17 @@
 	<!-- 顶部轮播 -->
     <div class="swiper-container banner-box">
         <div class="swiper-wrapper">
-            <!-- <div class="swiper-slide"><a href="{:url('index/item/show')}"><img src="__IMG__/slider/banner_1.jpg" class="cover"></a></div>
-            <div class="swiper-slide"><a href="{:url('index/item/show')}"><img src="__IMG__/slider/banner_2.jpg" class="cover"></a></div> -->
         </div>
         <div class="swiper-pagination"></div>
     </div>
     <!-- 首页楼层导航 -->
-	<nav class="floor-nav visible-lg-block">
+	<!-- <nav class="floor-nav visible-lg-block">
 		<span class="scroll-nav">女装</span>
 		<span class="scroll-nav">男装</span>
 		<span class="scroll-nav">活力童装</span>
 		<span class="scroll-nav">时尚包包</span>
 		<span class="scroll-nav">鞋靴</span>
-	</nav>
+	</nav> -->
 	<!-- 楼层内容 -->
 	<div class="content inner" style="margin-bottom: 40px;">
 		<!-- <section class="scroll-floor floor-1">
@@ -250,6 +248,52 @@
 						
 					}
 				);
+
+			$.post("{:url('index/index/showGoods')}" , function(data){
+				showGoods(data);
+			});
+
+			function showGoods(data){
+				var str = '';
+				var length = data.length;
+				for(var i=0;i<length;i++){
+					str+='<section class="scroll-floor floor-'+(i+2)+'">'+
+						'<div class="floor-title">'+
+						'<i class="iconfont icon-skirt fz16"></i>'+data[i]['name']+
+						'<div class="case-list fz0 pull-right">';
+						if(data[i]['son'].length>0){
+							for(var v in data[i]['son']){
+								str+='<a href="item_category.html">'+data[i]['son'][v]['name']+'</a>';
+							}
+						}
+						
+						str+='</div></div>'+
+						'<div class="con-box">'+
+						'<a class="left-img hot-img" href="">'+
+						'<img src="__IMG__/'+data[i]['image']+'" alt="" class="cover">'+
+						'</a>'+
+						'<div class="right-box">';
+						if(data[i]['goods'].length>0){
+							for(var v in data[i]['goods']){
+								str+='<a href="'+"{:url('index/item/show')}?gid="+data[i]['goods'][v]['goods_id']+'" class="floor-item">'+
+									'<div class="item-img hot-img">'+
+										'<img src="'+data[i]['goods'][v]['image']+'" alt="'+data[i]['goods'][v]['name']+'" class="cover">'+
+									'</div>'+
+									'<div class="price clearfix">'+
+										'<span class="pull-left cr fz16">'+data[i]['goods'][v]['price']+'</span>'+
+										'<span class="pull-right c6">进货价</span>'+
+									'</div>'+
+									'<div class="name ep" title="'+data[i]['goods'][v]['name']+'">'+data[i]['goods'][v]['name']+'</div>'+
+								'</a>'
+							}
+						}
+						
+						
+					str+='</div></div></section>';
+				}
+
+				$('.content').append(str);
+			}
 
 
 			

@@ -144,6 +144,7 @@ return [
         '__IMG__' => '/static/images',
         '__JS__' => '/static/js',
         '__ADMIN__' =>'/static/admin',
+        '__U_IMG__' =>'/upload/image'
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump.tpl',

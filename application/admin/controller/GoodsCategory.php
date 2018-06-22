@@ -2,10 +2,10 @@
 namespace app\admin\controller;
 class GoodsCategory extends Auth
 {
-	//商品分类管理
+	protected $is_check_login = ['*'];
 	public function index()
 	{
-		return $this->fetch();
+		echo '商品分类';
+		//return $this->fetch();
 	}
-
 }

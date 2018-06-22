@@ -8,7 +8,7 @@ class Index extends Auth
 		return $this->fetch();
 	}
 
-	public function rindex()
+	public function welcome()
 	{
 		return $this->fetch();
 	}

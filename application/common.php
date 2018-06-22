@@ -10,3 +10,10 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
+function resize($path , $width)
+{
+	$arr = explode('/', $path);
+	$arr = str_replace($arr[3], "thumb/$width", $arr);
+	$str = join('/' , $arr);
+	return $str;
+}

@@ -5,6 +5,7 @@ use app\index\model\Goods;
 use app\index\model\GoodsCategory;
 use app\index\model\Comment;
 use app\index\model\GoodsImage;
+use app\index\model\Cart;
 class Item extends Auth
 {
 	public function show()
@@ -65,13 +66,41 @@ class Item extends Auth
 	public function addCart()
 	{
 		$user_id = session('user')['u_id'];
+		$goods_id = input('post.gid');
+		$buy_num = input('post.quantity');
+		$find = ['goods_id'=>$goods_id,'user_id'=>$user_id];
 		if(input('post.color')){
-			$cart['color'] = input('post.color');
+			$find['color'] = input('post.color');
 		}
 		if(input('post.size')){
-			$cart['size'] = input('post.size');
+			$find['size'] = input('post.size');
+		}
+		//检查用户购物车有无同款同样式的商品 累加
+		$get_cart = Cart::get($find);
+		if(empty($get_cart)){
+			$find['quantity'] = input('post.quantity');
+			$result = Cart::create($find);
+			if($result){
+				return ['status'=>1,'msg'=>'添加成功'];
+			}else{
+				return ['status'=>0,'msg'=>'添加失败'];
+			}
+
+		}else{
+			$cart_id = $get_cart->cart_id;
+			$addnum = $quantity = $get_cart->quantity+$buy_num;
+			$result = Cart::where('cart_id',$cart_id)->update(['quantity'=>$addnum]);
+			if($result){
+				return ['status'=>1,'msg'=>'添加成功'];
+			}else{
+				return ['status'=>0,'msg'=>'添加失败'];
+			}
 		}
 
-
+	}
+	//获取产品的详细描述图
+	public function getDetail()
+	{
+		
 	}
 }

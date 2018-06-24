@@ -30,9 +30,19 @@ class Item extends Auth
 			$this->assign('discount',$discount);
 		}
 		//累计评论
-		$comment = Comment::all(["goods_id"=>$gid]);
-		//var_dump(count($comment));die;
+		$comment = Comment::query("select * from shop_comment where goods_id=$gid and status=1 order by create_time desc");
+		$this->assign('all_comment',$comment);
 		$this->assign('comment',count($comment));
+		//好评 中评 差评
+		$good_comment = Comment::query("select * from shop_comment where goods_id=$gid and Highpraise is not null and status=1 order by create_time desc");
+		$this->assign('good_comment',$good_comment);
+		$this->assign('count_good',count($good_comment));
+		$mid_comment = Comment::query("select * from shop_comment where goods_id=$gid and mediumreview is not null and status=1 order by create_time desc");
+		$this->assign('count_mid',count($mid_comment));
+		$this->assign('mid_comment',$mid_comment);
+		$bad_comment = Comment::query("select * from shop_comment where goods_id=$gid and negativecomment is not null and status=1 order by create_time desc");
+		$this->assign('bad_comment',$bad_comment);
+		$this->assign('count_bad',count($bad_comment));
 		//商品图片
 		$pic = GoodsImage::where('goods_id',$gid)->order('sort_order','asc')->select();
 		//var_dump($pic);die;
@@ -102,11 +112,108 @@ class Item extends Auth
 	//获取产品的详细描述图
 	public function getDetail()
 	{
+		//var_dump(1);
 		$goods_id = input('post.goods_id');
-		$img = GoodsDetail::all(function($query){
-			$query->where('goods_id',$goods_id)->order('sort','asc');
-		});
-		var_dump($img);
-		//return json($img);
+		$img = GoodsDetail::where('goods_id',$goods_id)->order('sort','asc')->select();
+		//var_dump($img);
+		return json($img);
+	}
+	public function getComment()
+	{
+		$flag = input('post.flag');
+		$goods_id = input('post.goods_id');
+		$num = input('post.num');
+		$page = input('post.page');
+		//$limit = ($page-1)*num;
+		if($flag==0){
+			//$comment = Comment::query("select * from shop_comment where goods_id=$goods_id and status=1 order by create_time desc");
+			$count = count(Comment::where('goods_id',$goods_id)->where('status',1)->select());
+			$pageNum = ceil($count/$num);
+			if($page<=1){
+				$page = 1;
+			}
+			if($page >=$pageNum){
+				$page = $pageNum;
+			}
+			$limit = ($page-1)*$num;
+			if($page==$pageNum){
+				$num = $count-($page-1)*$num;
+			}
+			$comment = Comment::where('goods_id',$goods_id)->where('status',1)->limit("$limit,$num")->order('create_time','desc')->select();
+		}
+		if($flag==1){
+			$count =count(Comment::where('goods_id',$goods_id)->where('status',1)->where('Highpraise','<>','')->select());
+			$pageNum = ceil($count/$num);
+			if($page<=1){
+				$page = 1;
+			}
+			if($page >=$pageNum){
+				$page = $pageNum;
+			}
+			$limit = ($page-1)*$num;
+			if($page==$pageNum){
+				$num = $count-($page-1)*$num;
+			}
+			$comment = Comment::where('goods_id',$goods_id)->where('status',1)->where('Highpraise','<>','')->limit("$limit,$num")->order('create_time','desc')->select();
+		}
+		if($flag==2){
+			$count = count(Comment::where('goods_id',$goods_id)->where('status',1)->where('mediumreview','<>','')->select());
+			$pageNum = ceil($count/$num);
+			if($page<=1){
+				$page = 1;
+			}
+			if($page >=$pageNum){
+				$page = $pageNum;
+			}
+			$limit = ($page-1)*$num;
+			if($page==$pageNum){
+				$num = $count-($page-1)*$num;
+			}
+			$comment = Comment::where('goods_id',$goods_id)->where('status',1)->where('mediumreview','<>','')->limit("$limit,$num")->order('create_time','desc')->select();
+		}
+		if($flag==3){
+			$count = count(Comment::where('goods_id',$goods_id)->where('status',1)->where('negativecomment','<>','')->select());
+			$pageNum = ceil($count/$num);
+			if($apge<=1){
+				$page = 1;
+			}
+			if($page >=$pageNum){
+				$page = $pageNum;
+			}
+			$limit = ($page-1)*$num;
+			if($page==$pageNum){
+				$num = $count-($page-1)*$num;
+			}
+			$comment = Comment::where('goods_id',$goods_id)->where('status',1)->where('negativecomment','<>','')->limit("$limit,$num")->order('create_time','desc')->select();
+		}
+		//var_dump($comment[3]);die;
+		if($comment){
+			//return json(['comment'=>$comment,'status'=>1]);
+			foreach($comment as $k=>$v){
+				$com[$k]['user_id'] = $comment[$k]->getUser->u_id;
+				$com[$k]['username'] = $comment[$k]->getUser->username;
+				$com[$k]['avg'] = $comment[$k]->getUser->avg;
+				//var_dump($comment[3]->getUser->username);die;
+				if($flag==0){
+					$com[$k]['comment'] = $comment[$k]->content;
+					//var_dump($com[$k]['all_comment']);
+				}
+				if($flag==1){
+					$com[$k]['comment'] = $comment[$k]->Highpraise;
+					//var_dump($com[$k]['good_comment']);die;
+				}
+				if($flag==2){
+					$com[$k]['comment'] = $comment[$k]->mediumreview;
+				}
+				if($flag==3){
+					$com[$k]['comment'] = $comment[$k]->negativecomment;
+				}
+				$com[$k]['create_time'] = $comment[$k]->create_time;
+			}
+			return json(['com'=>$com,'status'=>1,'pageNum'=>$pageNum,'page'=>$page]);
+		}else{
+			return json(['status'=>0]);
+			//return json(['status'=>0]);
+		}
 	}
 }

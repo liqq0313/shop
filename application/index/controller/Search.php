@@ -38,7 +38,7 @@ class Search extends Auth
 		}
 
 		//每页显示数
-		$num=5;
+		$num=20;
 		$page = isset($_GET['page'])?$_GET['page']:1;
 		$start = ($page-1)*$num;
 		

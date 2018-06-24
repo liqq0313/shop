@@ -26,7 +26,7 @@ class Goods extends Auth
 		$param = $request->param();
 
 		$goods = GoodsModel::get($param['id']);
-		//$goods['thumb'] = resize($goods['image'] , 360);
+		$goods['thumb'] = resize($goods['image'] , 360);
 		$this->assign('title' , '编辑');
 		$this->assign('goods' , $goods);
 		
@@ -82,10 +82,10 @@ class Goods extends Auth
 		    }
 		    $info = $file->move($filePaths);
 		    if($info){
-		        $imgpath = 'static/upload/'.$filePath.'/'.$info->getSaveName();
+		        $imgpath = 'upload/'.$filePath.'/'.$info->getSaveName();
 		        $imgpath = str_replace("\\", "/", $imgpath);
 		        $image = \think\Image::open($imgpath);
-		        $date_path = 'static/upload/'.$filePath.'/thumb/180';
+		        $date_path = 'upload/'.$filePath.'/thumb/180';
 		        if(!file_exists($date_path)){
 		          mkdir($date_path,0777,true);
 		        }

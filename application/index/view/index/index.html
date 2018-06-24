@@ -236,7 +236,7 @@
 							for(var v in data[i]['goods']){
 								str+='<a href="'+"{:url('index/item/show')}?gid="+data[i]['goods'][v]['goods_id']+'" class="floor-item">'+
 									'<div class="item-img hot-img">'+
-										'<img src="'+data[i]['goods'][v]['image']+'" alt="'+data[i]['goods'][v]['name']+'" class="cover">'+
+										'<img src="/'+data[i]['goods'][v]['image']+'" alt="'+data[i]['goods'][v]['name']+'" class="cover">'+
 									'</div>'+
 									'<div class="price clearfix">'+
 										'<span class="pull-left cr fz16">'+data[i]['goods'][v]['price']+'</span>'+

@@ -3,7 +3,7 @@ namespace app\index\controller;
 use app\index\model\GoodsCategory;
 use app\index\controller\Common;
 use think\Request;
-class Category
+class Category extends Auth
 {
 	public function getCateName()
 	{
@@ -22,11 +22,6 @@ class Category
 			$data = GoodsCategory::column('category_id,pid,name');
 		}
 		return json($data);
-	}
-
-	public function getGoodsIndex()
-	{
-		
 	}
 	
 }

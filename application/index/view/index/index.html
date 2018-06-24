@@ -4,10 +4,10 @@
 		<div class="inner">
 			<a class="logo" href="index.html"><img src="__IMG__/icons/logo.jpg" alt="U袋网" class="cover"></a>
 			<div class="search-box">
-				<form class="input-group">
-					<input placeholder="Ta们都在搜U袋网" type="text">
+				<form class="input-group" action="{:url('index/search/index')}">
+					<input placeholder="Ta们都在搜U袋网" type="text" name="keyword">
 					<span class="input-group-btn">
-						<button type="button">
+						<button type="submit">
 							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
 						</button>
 					</span>
@@ -263,7 +263,7 @@
 						'<div class="case-list fz0 pull-right">';
 						if(data[i]['son'].length>0){
 							for(var v in data[i]['son']){
-								str+='<a href="item_category.html">'+data[i]['son'][v]['name']+'</a>';
+								str+='<a href="'+"{:url('index/search/index')}?cid="+data[i]['son'][v]['category_id']+'">'+data[i]['son'][v]['name']+'</a>';
 							}
 						}
 						

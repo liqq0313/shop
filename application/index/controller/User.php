@@ -1,5 +1,6 @@
 <?php
 namespace app\index\controller;
+use app\index\model\Order;
 class User extends Auth
 {	
 	//没有登录状态自动跳转到登录界面
@@ -13,6 +14,10 @@ class User extends Auth
 	//我的订单
 	public function order()
 	{
+		$uid = session('user')['u_id'];
+		$data = Order::where(['user_id'=>$uid])->select();
+
+		$this->assign('data' , $data);
 		return $this->fetch();
 	}
 

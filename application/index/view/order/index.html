@@ -18,9 +18,9 @@
 					<div class="order-panel">
 						<ul class="nav user-nav__title" role="tablist">
 							<li role="presentation" class="nav-item active"><a href="#all" aria-controls="all" role="tab" data-toggle="tab" id="all">全部订单</a></li>
-							<li role="presentation" class="nav-item "><a href="#pay" aria-controls="pay" role="tab" data-toggle="tab" id="pay">待付款 <span class="cr">0</span></a></li>
-							<li role="presentation" class="nav-item "><a href="#emit" aria-controls="emit" role="tab" data-toggle="tab" id="emit">待收货 <span class="cr">0</span></a></li>
-							<li role="presentation" class="nav-item "><a href="#eval" aria-controls="eval" role="tab" data-toggle="tab" id="eval">待评价 <span class="cr">0</span></a></li>
+							<li role="presentation" class="nav-item "><a href="#pay" aria-controls="pay" role="tab" data-toggle="tab" id="pay">待付款 <span class="cr">{$totalPay}</span></a></li>
+							<li role="presentation" class="nav-item "><a href="#emit" aria-controls="emit" role="tab" data-toggle="tab" id="emit">待收货 <span class="cr">{$totalEmit}</span></a></li>
+							<li role="presentation" class="nav-item "><a href="#eval" aria-controls="eval" role="tab" data-toggle="tab" id="eval">待评价 <span class="cr">{$totalEval}</span></a></li>
 						</ul>
 
 						<div class="tab-content">
@@ -123,6 +123,16 @@
 		page++;
 		showPage();
 	});	
+	$('body').on('click','.del',function(){
+		var id = $(this).attr('dataIndex');
+		var msg = confirm('你确认删除当前订单吗');
+		if (msg) {
+			$.post("{:url('index/order/delOrder')}",{'del':1,"id":id},function(data){
+				alert(data['msg']);
+				$(location).attr('href',data['url']);
+			});
+		}
+	});
 	function showPage()
 	{
 		$('#data_all').removeClass('in');
@@ -147,8 +157,7 @@
 		$('#data_'+id).addClass('active');
 		$('#data_'+id).addClass('in');
 
-		$.post("showOrder" , {"flag":flag,"num":2,"page":page},function(data){
-
+		$.post("{:url('index/order/showOrder')}" , {"flag":flag,"num":5,"page":page},function(data){
 			len = data['data'].length;
 			var str ='<table class="table text-center">'+
 					'<tr>'+
@@ -170,9 +179,17 @@
 							'<div class="card">'+
 								'<div class="img"><img src="/'+data['data'][i]['goods']['image']+'" alt="" class="cover"></div>'+
 								'<div class="name ep2">'+data['data'][i]['goods']['name']+'</div>'+
-								'<div class="format">颜色分类：'+data['data'][i]['color']+'尺码：'+data['data'][i]['size']+'</div>'+
-								'<div class="favour">使用优惠券：优惠¥2.00</div>'+
-							'</div>'+
+								'<div class="format">';
+
+								if(data['data'][i]['color']){
+									str+='颜色分类：'+data['data'][i]['color'];
+								}
+
+								if (data['data'][i]['size']) {
+									str+='尺码：'+data['data'][i]['size'];
+								}
+								
+							str+='</div>'+
 						'</label>'+
 					'</td>'+
 					'<td>￥'+data['data'][i]['goods']['price']+'</td>'+
@@ -180,27 +197,32 @@
 					'<td>￥'+data['data'][i]['pay_price']+'<br><span class="fz12 c6 text-nowrap">(含运费: ¥0.00)</span></td>'+
 					'<td class="state">'+
 						'<a class="but c6">'+data['data'][i]['status']+'</a>'+
-						'<a href="udai_order_detail.html" class="but c9">订单详情</a>'+
+						'<a href="detail?id='+data['data'][i]['id']+'" class="but c9">订单详情</a>'+
 					'</td>'+
-					'<td class="order">'+
-						'<div class="del"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></div>'+
-						'<a href="udai_shopcart_pay.html" class="but but-primary">';
-						if(data['data'][i]['status']=='等待付款'){
-							str+='确认付款';
-						}else if(data['data'][i]['status']=='等待收货'){
-							str+='确认收货';
+					'<td class="order">';
+						if (data['data'][i]['status']=='交易成功'||data['data'][i]['status']=='订单已取消'||data['data'][i]['status']=='已评价'||data['data'][i]['status']=='已追评') {
+							str+='<div class="del" dataIndex="'+data['data'][i]['id']+'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></div>';
 						}
-						str+='</a>';
-						if(data['data'][i]['status']=='交易完成'){
-							str+='<a href="" class="but but-link">评价</a>';
-						}
-						str +='<a href="" class="but c3">';
-						if(data['data'][i]['status']=='等待付款'){
-							str+='取消订单'
+						
+						if(data['data'][i]['status'].indexOf('等待')!=-1){
+							str+='<a href="'+"{:url('index/order/zhong')}?id="+data['data'][i]['id']+'" class="but but-primary">';
+							str +=data['data'][i]['status'].replace('等待','确认');
+							str+='</a>';
 						}else{
-							str+='退款/退货';
+							str+=data['data'][i]['status']+'<br/>';
 						}
-						str+='</a></td></tr>';
+
+						
+						if(data['data'][i]['status']=='交易成功'){
+							str+='<a  href="'+"{:url('index/order/zhong')}?id="+data['data'][i]['id']+'" class="but but-link">评价</a>';
+						}
+						
+						if(data['data'][i]['status']=='等待付款'){
+							str +='<a  href="'+"{:url('index/order/cancel')}?id="+data['data'][i]['id']+'" class="but c3">取消订单</a>';
+						}else if(data['data'][i]['status']!='订单已取消'&&data['data'][i]['status']!='已评价'&&data['data'][i]['status']!='已追评'){
+							str+='<a href="refund?id='+data['data'][i]['id']+'">退款/退货</a>';
+						}
+						str+='</td></tr>';
 						
 			}
 
@@ -231,8 +253,7 @@
 						'<div class="empty-msg">最近没有任何订单，家里好像缺了点什么！<br><a href="'+"{:url('index/index/index')}"+'">要不瞧瞧去？</a></div>'+
 					'</td></tr>';
 			}
-			$('#data_'+id).append(str);		
-												
+			$('#data_'+id).append(str);	
 		});
 	}
 	

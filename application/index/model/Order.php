@@ -13,6 +13,16 @@ class Order extends Model
         return date('Y-m-d',$time);
     }
 
+    public function getPayTimeAttr($time)
+    {
+        return date('Y-m-d H:i:s',$time);
+    }
+
+    public function getSuccessTimeAttr($time)
+    {
+        return date('Y-m-d H:i:s',$time);
+    }
+
     public function getStatusAttr($status)
     {
     	switch ($status) {
@@ -26,6 +36,17 @@ class Order extends Model
     			return '交易成功';
     		case 4:
     			return '订单已取消';
+            case 5:
+                return '已评价';
+            case 6:
+                return '已追评';
+            case 7:
+                return '订单已删除';
     	}
+    }
+
+    public function getAddress()
+    {
+        return $this->hasOne('address','id','address_id');
     }
 }

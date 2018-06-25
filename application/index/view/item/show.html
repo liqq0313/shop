@@ -36,7 +36,7 @@
 				<div class="title"><i class="iconfont icon-menu"></i> 全部分类</div>
 			</div>
 			<ul class="nva-list">
-				<a href="index.html"><li>首页</li></a>
+				<a href="{:url('index/index/index')}"><li>首页</li></a>
 				<a href="temp_article/udai_article10.html"><li>企业简介</li></a>
 				<a href="temp_article/udai_article5.html"><li>新手上路</li></a>
 				<a href="class_room.html"><li>U袋学堂</li></a>
@@ -414,6 +414,7 @@
 							$(function(){
 								var flag = 0;
 								var page = 1;
+								var pageNum;
 								$('#total_com').click(function(){
 									flag = 0;
 									page = 1;
@@ -447,6 +448,7 @@
 								});						
 								$('body').on('click','.prevPage',function(){
 									page--;
+									//alert(page);
 									comments();
 
 								});	
@@ -466,7 +468,7 @@
 										"data":{
 											'goods_id':{$goods->goods_id},
 											'flag':flag,
-											'num':2,
+											'num':3,
 											'page':page
 											},
 										"success":function(data){
@@ -493,8 +495,8 @@
 							 					for(var i=0;i<data['com'].length;i++){
 												$('#'+id).prepend('<div class="eval-box"><div class="eval-author"><div class="port"><img src="__IMG__/icons/default_avt.png" alt="欢迎来到U袋网" class="cover b-r50"></div><div class="name">'+data['com'][i].username+'</div></div><div class="eval-content"><div class="eval-text">'+data['com'][i].comment+'</div><div class="eval-imgs"><div class="img-temp"><img src="__IMG__/goods/S-001-1_s.jpg" data-src="__IMG__/goods/S-001-1_b.jpg" data-action="zoom" class="cover"></div><div class="img-temp"><img src="__IMG__/goods/S-001-5_s.jpg" data-src="__IMG__/goods/S-001-5_b.jpg" data-action="zoom" class="cover"></div></div><div class="eval-time">'+data['com'][i].create_time+' 颜色分类：深棕色 尺码：均码</div></div></div>');
 												}
-												var pageNum = data['pageNum'];
-												var page = data['page'];
+												pageNum = data['pageNum'];
+												page = data['page'];
 												var times = 1;
 												$('.pageLimit').remove('div');
 												$('.pageLimit').remove('a');

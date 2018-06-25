@@ -40,6 +40,7 @@ class Item extends Auth
 		$mid_comment = Comment::query("select * from shop_comment where goods_id=$gid and mediumreview is not null and status=1 order by create_time desc");
 		$this->assign('count_mid',count($mid_comment));
 		$this->assign('mid_comment',$mid_comment);
+		//var_dump(count($mid_comment));die;
 		$bad_comment = Comment::query("select * from shop_comment where goods_id=$gid and negativecomment is not null and status=1 order by create_time desc");
 		$this->assign('bad_comment',$bad_comment);
 		$this->assign('count_bad',count($bad_comment));
@@ -76,35 +77,121 @@ class Item extends Auth
 	//加入购物车
 	public function addCart()
 	{
-		$user_id = session('user')['u_id'];
 		$goods_id = input('post.gid');
 		$buy_num = input('post.quantity');
-		$find = ['goods_id'=>$goods_id,'user_id'=>$user_id];
-		if(input('post.color')){
-			$find['color'] = input('post.color');
-		}
-		if(input('post.size')){
-			$find['size'] = input('post.size');
-		}
-		//检查用户购物车有无同款同样式的商品 累加
-		$get_cart = Cart::get($find);
-		if(empty($get_cart)){
-			$find['quantity'] = input('post.quantity');
-			$result = Cart::create($find);
-			if($result){
-				return json(['status'=>1,'msg'=>'添加成功']);
-			}else{
-				return json(['status'=>0,'msg'=>'添加失败']);
+		if(isset(session('user')['u_id']))
+		{
+			$user_id = session('user')['u_id'];
+			$find = ['goods_id'=>$goods_id,'user_id'=>$user_id];
+			if(input('post.color')){
+				$find['color'] = input('post.color');
 			}
+			if(input('post.size')){
+				$find['size'] = input('post.size');
+			}
+			//检查用户购物车有无同款同样式的商品 累加
+			$get_cart = Cart::get($find);
+			if(empty($get_cart)){
+				$find['quantity'] = input('post.quantity');
+				$result = Cart::create($find);
+				if($result){
+					return json(['status'=>1,'msg'=>'添加成功']);
+				}else{
+					return json(['status'=>0,'msg'=>'添加失败']);
+				}
 
-		}else{
-			$cart_id = $get_cart->cart_id;
-			$addnum = $quantity = $get_cart->quantity+$buy_num;
-			$result = Cart::where('cart_id',$cart_id)->update(['quantity'=>$addnum]);
-			if($result){
-				return json(['status'=>1,'msg'=>'添加成功']);
 			}else{
-				return json(['status'=>0,'msg'=>'添加失败']);
+				$cart_id = $get_cart->cart_id;
+				$addnum = $quantity = $get_cart->quantity+$buy_num;
+				$result = Cart::where('cart_id',$cart_id)->update(['quantity'=>$addnum]);
+				if($result){
+					return json(['status'=>1,'msg'=>'添加成功']);
+				}else{
+					return json(['status'=>0,'msg'=>'添加失败']);
+				}
+			}
+		}else{
+			//var_dump(2);
+			if(isset($_COOKIE['shop_cart_info'])){
+				$cur_cart_array = unserialize(stripslashes($_COOKIE['shop_cart_info'])); 
+			}else{
+				$cur_cart_array = "";
+			}
+			if($cur_cart_array==""){
+				$cart_info[0]['goods_id'] = $goods_id;
+				if(input('post.color')){
+					$cart_info[0]['color'] = input('post.color');
+				}
+				if(input('post.size')){
+					$cart_info[0]['size'] = input('post.size');
+				}
+				$cart_info[0]['buy_num'] = $buy_num;	
+				setcookie("shop_cart_info",serialize($cart_info));
+				//var_dump($_COOKIE['shop_cart_info']);
+			}else{
+					
+				$ar_keys = array_keys($cur_cart_array); 
+				rsort($ar_keys); 
+				$max_array_keyid = $ar_keys[0]+1;
+				$cart_info[$max_array_keyid]['goods_id'] = $goods_id;
+				if(input('post.color')){
+					$cart_info[$max_array_keyid]['color'] = input('post.color');
+				}
+				if(input('post.size')){
+					$cart_info[$max_array_keyid]['size'] = input('post.size');
+				}
+				$cart_info[$max_array_keyid]['buy_num'] = $buy_num;
+				
+				foreach($cur_cart_array as $key=>$goods_current_cart){
+					//var_dump($goods_current_cart['goods_id']);
+					//var_dump($cart_info['goods_id']);
+					if($goods_current_cart['goods_id']==$cart_info[$max_array_keyid]['goods_id']&&$goods_current_cart['color']==$cart_info[$max_array_keyid]['color']&&$goods_current_cart['size']==$cart_info[$max_array_keyid]['size']){
+						echo $key;
+						$cur_cart_array[$key] = '';
+						$cur_cart_array[$key]['goods_id'] = $goods_id;
+						//var_dump($cur_cart_array[$key]['buy_num']);
+						//var_dump($goods_current_cart['buy_num']);
+						//var_dump($buy_num);
+						$cur_cart_array[$key]['buy_num'] = $goods_current_cart['buy_num']+$buy_num;
+						if(input('post.color')){
+							$cur_cart_array[$key]['color'] = input('post.color');
+						}
+						if(input('post.size')){
+							$cur_cart_array[$key]['size'] = input('post.size');
+						}
+						//var_dump($cur_cart_array);
+						var_dump($cur_cart_array);
+						setcookie("shop_cart_info",serialize($cur_cart_array)); 
+						return json(['status'=>1,'msg'=>'添加成功']);
+						//setcookie("shop_cart_info",serialize($cur_cart_array));
+					}
+				}
+				$cur_cart_array[$max_array_keyid] = '';
+				$cur_cart_array[$max_array_keyid]['goods_id'] = $goods_id; 
+				$cur_cart_array[$max_array_keyid]['buy_num'] = $buy_num;
+				if(input('post.color')){
+					$cur_cart_array[$max_array_keyid]['color'] = input('post.color');
+				}
+				if(input('post.size')){
+					$cur_cart_array[$max_array_keyid]['size'] = input('post.size');
+				}
+				setcookie("shop_cart_info",serialize($cur_cart_array)); 
+				//var_dump(session('cart')[$goods_id]);
+				// $flag = 0;
+				// foreach(session('cart')[$goods_id] as $k=>$v){
+				// 	if($v==$arr){
+				// 		$arr['buy_num'] = session('cart')[$goods_id][$k]['buy_num']+$arr['buy_num'];
+				// 		session('cart')[$goods_id][$k] = $arr;
+				// 		$flag = 1;
+				// 		return json(['status'=>1,'msg'=>'添加成功']);
+				// 	}
+				// }
+				// if($flag==0){
+				// 	session('cart')[$goods_id][] = $arr;
+					//setcookie('shop_cart_info','',time()-1);
+					var_dump($cur_cart_array);
+				 	return json(['status'=>1,'msg'=>'添加成功']);
+				// }
 			}
 		}
 
@@ -128,7 +215,9 @@ class Item extends Auth
 		if($flag==0){
 			//$comment = Comment::query("select * from shop_comment where goods_id=$goods_id and status=1 order by create_time desc");
 			$count = count(Comment::where('goods_id',$goods_id)->where('status',1)->select());
+			//var_dump($count);die;
 			$pageNum = ceil($count/$num);
+			//var_dump($pageNum);die;
 			if($page<=1){
 				$page = 1;
 			}
@@ -143,7 +232,9 @@ class Item extends Auth
 		}
 		if($flag==1){
 			$count =count(Comment::where('goods_id',$goods_id)->where('status',1)->where('Highpraise','<>','')->select());
+			//var_dump($count);die;
 			$pageNum = ceil($count/$num);
+			//var_dump($pageNum);die;
 			if($page<=1){
 				$page = 1;
 			}
@@ -158,7 +249,9 @@ class Item extends Auth
 		}
 		if($flag==2){
 			$count = count(Comment::where('goods_id',$goods_id)->where('status',1)->where('mediumreview','<>','')->select());
+			//var_dump($count);die;
 			$pageNum = ceil($count/$num);
+			//var_dump($pageNum);die;
 			if($page<=1){
 				$page = 1;
 			}
@@ -170,11 +263,12 @@ class Item extends Auth
 				$num = $count-($page-1)*$num;
 			}
 			$comment = Comment::where('goods_id',$goods_id)->where('status',1)->where('mediumreview','<>','')->limit("$limit,$num")->order('create_time','desc')->select();
+			//var_dump($comment);die;
 		}
 		if($flag==3){
 			$count = count(Comment::where('goods_id',$goods_id)->where('status',1)->where('negativecomment','<>','')->select());
 			$pageNum = ceil($count/$num);
-			if($apge<=1){
+			if($page<=1){
 				$page = 1;
 			}
 			if($page >=$pageNum){
@@ -188,8 +282,11 @@ class Item extends Auth
 		}
 		//var_dump($comment[3]);die;
 		if($comment){
+			//var_dump($comment[0]);die;
 			//return json(['comment'=>$comment,'status'=>1]);
 			foreach($comment as $k=>$v){
+				//var_dump($k);
+				//var_dump($v->getUser);die;
 				$com[$k]['user_id'] = $comment[$k]->getUser->u_id;
 				$com[$k]['username'] = $comment[$k]->getUser->username;
 				$com[$k]['avg'] = $comment[$k]->getUser->avg;
@@ -210,6 +307,7 @@ class Item extends Auth
 				}
 				$com[$k]['create_time'] = $comment[$k]->create_time;
 			}
+			//die;
 			return json(['com'=>$com,'status'=>1,'pageNum'=>$pageNum,'page'=>$page]);
 		}else{
 			return json(['status'=>0]);

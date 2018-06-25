@@ -9,17 +9,14 @@ class Search extends Auth
 	public function index()
 	{
 		$keyword = isset($_GET['keyword'])?$_GET['keyword']:null;
-
-		if(!isset($_GET['cid'])){
-			$this->redirect(url('index/index/index'));
-		}
-		$cid = $_GET['cid'];
-
-		$option = [];
+		$this->assign('keyword' , $keyword);
 		
+		$cid = isset($_GET['cid'])?$_GET['cid']:1;
+		$option = [];
 		$cate = GoodsCategory::get($cid);
-		if (empty($cate)) {
-			$this->redirect(url('index/index/index'));
+		if (!isset($_GET['cid']) || empty($cate)) {
+			$this->assign('keyword' , '抱歉，没有找到商品');
+			$cate = GoodsCategory::get(1);
 		}
 
 		if ($cate['pid']!=0) {
@@ -36,7 +33,8 @@ class Search extends Auth
 		if (!empty($cate)) {
 			$option['cate'] = $cate;
 		}
-
+		
+		
 		//每页显示数
 		$num=20;
 		$page = isset($_GET['page'])?$_GET['page']:1;
@@ -56,7 +54,6 @@ class Search extends Auth
 
 		$bao = Goods::field('goods_id,name,price,image,discount')->where('status',1)->order('sale_num desc')->limit(10)->select();
 		
-
 		$pageCount = ceil($total/$num);
 		
 		if (isset($_GET['mPrice']) && isset($_GET['lPrice'])) {
@@ -144,7 +141,7 @@ class Search extends Auth
 			$next=$pageCount;
 		}
 
-		$this->assign('keyword' , $keyword);
+		
 		$this->assign('bao' , $bao);
 		$this->assign('goods' , $goods);
 		$this->assign('page' , $page);

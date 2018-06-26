@@ -61,6 +61,17 @@ class Item extends Auth
 			$size = explode(' ',$goods->size);
 			$this->assign('size',$size);
 		}
+		//购物车
+		if(!empty(session('user'))){
+			$cart_count = Cart::where('user_id',session('user')['u_id'])->count();
+			$this->assign('cart_count',$cart_count);
+		}elseif(isset($_COOKIE['shop_cart_info'])){
+			$cur_cart_array = unserialize(stripslashes($_COOKIE['shop_cart_info']));
+			$cart_count = count($cur_cart_array); 
+			$this->assign('cart_count',$cart_count);
+		}else{
+			$this->assign('cart_count',0);
+		}
 		//上架日期
 		$date = explode(' ',$goods->create_time)[0];
 		//$date = date('Y-m-d',$goods->create_time);
@@ -78,7 +89,7 @@ class Item extends Auth
 	public function addCart()
 	{
 		$goods_id = input('post.gid');
-		$buy_num = input('post.quantity');
+		$quantity = input('post.quantity');
 		if(isset(session('user')['u_id']))
 		{
 			$user_id = session('user')['u_id'];
@@ -102,7 +113,7 @@ class Item extends Auth
 
 			}else{
 				$cart_id = $get_cart->cart_id;
-				$addnum = $quantity = $get_cart->quantity+$buy_num;
+				$addnum = $quantity = $get_cart->quantity+$quantity;
 				$result = Cart::where('cart_id',$cart_id)->update(['quantity'=>$addnum]);
 				if($result){
 					return json(['status'=>1,'msg'=>'添加成功']);
@@ -113,7 +124,7 @@ class Item extends Auth
 		}else{
 			//var_dump(2);
 			if(isset($_COOKIE['shop_cart_info'])){
-				$cur_cart_array = unserialize(stripslashes($_COOKIE['shop_cart_info'])); 
+				$cur_cart_array = unserialize(stripslashes($_COOKIE['shop_cart_info']));
 			}else{
 				$cur_cart_array = "";
 			}
@@ -125,7 +136,7 @@ class Item extends Auth
 				if(input('post.size')){
 					$cart_info[0]['size'] = input('post.size');
 				}
-				$cart_info[0]['buy_num'] = $buy_num;	
+				$cart_info[0]['quantity'] = $quantity;	
 				setcookie("shop_cart_info",serialize($cart_info));
 				//var_dump($_COOKIE['shop_cart_info']);
 			}else{
@@ -140,19 +151,19 @@ class Item extends Auth
 				if(input('post.size')){
 					$cart_info[$max_array_keyid]['size'] = input('post.size');
 				}
-				$cart_info[$max_array_keyid]['buy_num'] = $buy_num;
+				$cart_info[$max_array_keyid]['quantity'] = $quantity;
 				
 				foreach($cur_cart_array as $key=>$goods_current_cart){
 					//var_dump($goods_current_cart['goods_id']);
 					//var_dump($cart_info['goods_id']);
 					if($goods_current_cart['goods_id']==$cart_info[$max_array_keyid]['goods_id']&&$goods_current_cart['color']==$cart_info[$max_array_keyid]['color']&&$goods_current_cart['size']==$cart_info[$max_array_keyid]['size']){
-						echo $key;
+						//echo $key;
 						$cur_cart_array[$key] = '';
 						$cur_cart_array[$key]['goods_id'] = $goods_id;
-						//var_dump($cur_cart_array[$key]['buy_num']);
-						//var_dump($goods_current_cart['buy_num']);
-						//var_dump($buy_num);
-						$cur_cart_array[$key]['buy_num'] = $goods_current_cart['buy_num']+$buy_num;
+						//var_dump($cur_cart_array[$key]['quantity']);
+						//var_dump($goods_current_cart['quantity']);
+						//var_dump($quantity);
+						$cur_cart_array[$key]['quantity'] = $goods_current_cart['quantity']+$quantity;
 						if(input('post.color')){
 							$cur_cart_array[$key]['color'] = input('post.color');
 						}
@@ -160,7 +171,7 @@ class Item extends Auth
 							$cur_cart_array[$key]['size'] = input('post.size');
 						}
 						//var_dump($cur_cart_array);
-						var_dump($cur_cart_array);
+						//var_dump($cur_cart_array);
 						setcookie("shop_cart_info",serialize($cur_cart_array)); 
 						return json(['status'=>1,'msg'=>'添加成功']);
 						//setcookie("shop_cart_info",serialize($cur_cart_array));
@@ -168,7 +179,7 @@ class Item extends Auth
 				}
 				$cur_cart_array[$max_array_keyid] = '';
 				$cur_cart_array[$max_array_keyid]['goods_id'] = $goods_id; 
-				$cur_cart_array[$max_array_keyid]['buy_num'] = $buy_num;
+				$cur_cart_array[$max_array_keyid]['quantity'] = $quantity;
 				if(input('post.color')){
 					$cur_cart_array[$max_array_keyid]['color'] = input('post.color');
 				}
@@ -180,7 +191,7 @@ class Item extends Auth
 				// $flag = 0;
 				// foreach(session('cart')[$goods_id] as $k=>$v){
 				// 	if($v==$arr){
-				// 		$arr['buy_num'] = session('cart')[$goods_id][$k]['buy_num']+$arr['buy_num'];
+				// 		$arr['quantity'] = session('cart')[$goods_id][$k]['quantity']+$arr['quantity'];
 				// 		session('cart')[$goods_id][$k] = $arr;
 				// 		$flag = 1;
 				// 		return json(['status'=>1,'msg'=>'添加成功']);
@@ -189,7 +200,7 @@ class Item extends Auth
 				// if($flag==0){
 				// 	session('cart')[$goods_id][] = $arr;
 					//setcookie('shop_cart_info','',time()-1);
-					var_dump($cur_cart_array);
+					//var_dump($cur_cart_array);
 				 	return json(['status'=>1,'msg'=>'添加成功']);
 				// }
 			}

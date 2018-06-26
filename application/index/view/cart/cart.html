@@ -29,80 +29,23 @@
 						<tbody>
 							<script type="text/javascript">
 								$(function(){
+									var li = 1;
 									$.ajax({
 										"type":"post",
 										"url":"getCart",
 										"dataType":"json",
 										"async":true,
 										"success":function(data){
-											
+											var len = data['cart_info'].length;
+											//alert(len);
+											//alert(data[0].price);
+											for(var i=0;i<len;i++){
+												$('tbody').append('<tr><th scope="row"><label class="checked-label"><input type="checkbox" class="checks"><i></i><div class="img"><img src="/'+data['goods_info'][i].image+'" alt="" class="cover"></div></label></th><td><div class="name ep3">'+data['goods_info'][i].name+'</div><div class="type c9">颜色分类：'+data['cart_info'][i].color+'  尺码：'+data['cart_info'][i].size+'</div></td><td>'+data['goods_info'][i].price+'</td><td><div class="cart-num__box"><input type="button" class="sub" value="-"><input type="text" class="val" value="'+data['cart_info'][i].quantity+'" maxlength="2"><input type="button" class="add" value="+"></div></td><td class="real_price">￥'+data['goods_info'][i].price*data['goods_info'][i].discount*0.1+'</td><td><a href="">删除</a></td></tr>');
+											}
 										}
 									});
 								});
 							</script>
-							<tr>
-								<th scope="row">
-									<label class="checked-label"><input type="checkbox"><i></i>
-										<div class="img"><img src="__IMG__/temp/M-003.jpg" alt="" class="cover"></div>
-									</label>
-								</th>
-								<td>
-									<div class="name ep3">锦瑟 原创传统日常汉服男绣花交领衣裳cp情侣装春夏款</div>
-									<div class="type c9">颜色分类：深棕色  尺码：均码</div>
-								</td>
-								<td>¥20.0</td>
-								<td>
-									<div class="cart-num__box">
-										<input type="button" class="sub" value="-">
-										<input type="text" class="val" value="1" maxlength="2">
-										<input type="button" class="add" value="+">
-									</div>
-								</td>
-								<td>¥20.0</td>
-								<td><a href="">删除</a></td>
-							</tr>
-							<tr>
-								<th scope="row">
-									<label class="checked-label"><input type="checkbox"><i></i>
-										<div class="img"><img src="__IMG__/temp/S-005.jpg" alt="" class="cover"></div>
-									</label>
-								</th>
-								<td>
-									<div class="name ep3">霜天月明 原创传统日常汉服男绣花交领衣裳cp春装单品</div>
-									<div class="type c9">颜色分类：深棕色  尺码：均码</div>
-								</td>
-								<td>¥20.0</td>
-								<td>
-									<div class="cart-num__box">
-										<input type="button" class="sub" value="-">
-										<input type="text" class="val" value="1" maxlength="2">
-										<input type="button" class="add" value="+">
-									</div>
-								</td>
-								<td>¥20.0</td>
-								<td><a href="">删除</a></td>
-							</tr>
-							<tr>
-								<th scope="row">
-									<label class="checked-label"><input type="checkbox"><i></i>
-										<div class="img"><img src="__IMG__/temp/M-007.jpg" alt="" class="cover"></div>
-									</label>
-								</th>
-								<td>
-									<div class="name ep3">陇上乐 原创传统日常汉服男绣花单大氅大袖衫cp情侣春秋</div>
-									<div class="type c9">颜色分类：深棕色  尺码：均码</div>
-								</td>
-								<td>¥20.0</td>
-								<td>
-									<div class="cart-num__box">
-										<input type="button" class="sub" value="-">
-										<input type="text" class="val" value="1" maxlength="2">
-										<input type="button" class="add" value="+">
-									</div>
-								</td>
-								<td>¥20.0</td>
-								<td><a href="">删除</a></td>
-							</tr>
 						</tbody>
 					</table>
 					<div class="user-form-group tags-box shopcart-submit pull-right">
@@ -112,38 +55,99 @@
 						<label><input type="checkbox" class="check-all"><i></i> 全选</label>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">删除</a>
 						<div class="pull-right">
-							已选商品 <span>2</span> 件
+							已选商品 <span class="goods_num">0</span> 件
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;合计（不含运费）
-							<b class="cr">¥<span class="fz24">40.00</span></b>
+							<b class="cr">¥<span class="fz24">0</span></b>
 						</div>
 					</div>
 					<script>
 						$(document).ready(function(){
-							var $item_checkboxs = $('.shopcart-form__box tbody input[type="checkbox"]'),
-								$check_all = $('.check-all');
 							// 全选
-							$check_all.on('change', function() {
-								$check_all.prop('checked', $(this).prop('checked'));
-								$item_checkboxs.prop('checked', $(this).prop('checked'));
+							$('.check-all').on('change',function() {
+								//alert(1);
+								if($('.check-all').prop('checked')){
+									$('.checks').prop('checked', true);
+									$('.check-all').prop('checked',true);
+									var price = 0;
+									var n = 0;
+									var count = 1;
+									$('tr').each(function(){
+										if(n!=0){
+											count = $(this).find('.val').val();
+											p = Number($(this).find('.real_price').html().substr(1));
+											price = price+(p*count);
+										}
+										n++;
+										// price += Number($(this).find('.real_price').html().substr(1));
+										// alert(price);
+										$('.fz24').html(price);
+										$('.goods_num').html(n-1);
+									});
+									//alert(price);
+								}else{
+									$('.checks').prop('checked', false);
+									$('.check-all').prop('checked',false);
+									$('.fz24').html(0);
+									$('.goods_num').html(0);
+								}
+								//$item_checkboxs.prop('checked', $(this).prop('checked'));
 							});
 							// 点击选择
-							$item_checkboxs.on('change', function() {
+							$('body').on('change','.checks',function() {
+								var len = $('.checks').length;
 								var flag = true;
-								$item_checkboxs.each(function() {
-									if (!$(this).prop('checked')) { flag = false }
+								$('.checks').each(function(){
+									if(!$(this).prop('checked')){
+										flag = false;
+										return;
+									}
 								});
-								$check_all.prop('checked', flag);
+								if(!flag){
+									$('.check-all').prop('checked',false);
+								}else{
+									$('.check-all').prop('checked',true);
+								}
+								var price = 0;
+								var n = 0;					
+								$('tr').each(function(){
+										if($(this).find('.checks').prop('checked')){
+											count = $(this).find('.val').val();
+											p = Number($(this).find('.real_price').html().substr(1));
+											price = price+(p*count);
+											n++;
+											//alert(price);
+										}
+										// price += Number($(this).find('.real_price').html().substr(1));
+										// alert(price);
+										$('.fz24').html(price);
+										$('.goods_num').html(n);
+									});
 							});
 							// 个数限制输入数字
 							$('input.val').onlyReg({reg: /[^0-9.]/g});
 							// 加减个数
-							$('.cart-num__box').on('click', '.sub,.add', function() {
+							$('body').on('click', '.sub,.add', function() {
 								var value = parseInt($(this).siblings('.val').val());
 								if ($(this).hasClass('add')) {
 									$(this).siblings('.val').val(Math.min((value += 1),99));
 								} else {
 									$(this).siblings('.val').val(Math.max((value -= 1),1));
 								}
+								var price = 0;
+								var n = 0;					
+								$('tr').each(function(){
+										if($(this).find('.checks').prop('checked')){
+											count = $(this).find('.val').val();
+											p = Number($(this).find('.real_price').html().substr(1));
+											price = price+(p*count);
+											n++;
+											//alert(price);
+										}
+										// price += Number($(this).find('.real_price').html().substr(1));
+										// alert(price);
+										$('.fz24').html(price);
+										$('.goods_num').html(n);
+									});
 							});
 						});
 					</script>

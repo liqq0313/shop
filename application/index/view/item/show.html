@@ -24,7 +24,7 @@
 			</div>
 			<div class="cart-box">
 				<a href="udai_shopcart.html" class="cart-but">
-					<i class="iconfont icon-shopcart cr fz16"></i> 购物车 0 件
+					<i class="iconfont icon-shopcart cr fz16"></i> 购物车 {$cart_count} 件
 				</a>
 			</div>
 		</div>
@@ -210,7 +210,7 @@
 										"async":true,
 										"data":params,
 										"success":function(data){
-											alert(data.msg);
+											alert(data['msg']);
 										}
 									});
 									

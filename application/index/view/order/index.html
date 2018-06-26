@@ -1,0 +1,260 @@
+{include file="../application/index/view/common/top.html" /}
+<!-- 顶部标题 -->
+<div class="bgf5 clearfix">
+	<div class="top-user">
+		<div class="inner">
+			<a class="logo" href="{:url('index/index/index')}"><img src="__IMG__/icons/logo.jpg" alt="U袋网" class="cover"></a>
+			<div class="title">个人中心</div>
+		</div>
+	</div>
+</div>
+<div class="content clearfix bgf5">
+	<section class="user-center inner clearfix">
+		{include file="../application/index/view/common/infoleft.html" /}
+		<div class="pull-right">
+			<div class="user-content__box clearfix bgf">
+				<div class="title">订单中心-我的订单</div>
+				<div class="order-list__box bgf">
+					<div class="order-panel">
+						<ul class="nav user-nav__title" role="tablist">
+							<li role="presentation" class="nav-item active"><a href="#all" aria-controls="all" role="tab" data-toggle="tab" id="all">全部订单</a></li>
+							<li role="presentation" class="nav-item "><a href="#pay" aria-controls="pay" role="tab" data-toggle="tab" id="pay">待付款 <span class="cr">{$totalPay}</span></a></li>
+							<li role="presentation" class="nav-item "><a href="#emit" aria-controls="emit" role="tab" data-toggle="tab" id="emit">待收货 <span class="cr">{$totalEmit}</span></a></li>
+							<li role="presentation" class="nav-item "><a href="#eval" aria-controls="eval" role="tab" data-toggle="tab" id="eval">待评价 <span class="cr">{$totalEval}</span></a></li>
+						</ul>
+
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane fade" id="data_all">
+							</div>
+							<div role="tabpanel" class="tab-pane fade" id="data_pay">
+							</div>
+							<div role="tabpanel" class="tab-pane fade" id="data_emit">
+							</div>
+							<div role="tabpanel" class="tab-pane fade" id="data_eval">
+							</div>
+						</div>
+					</div>
+				</div>
+			
+			</div>
+		</div>
+	</section>
+</div>
+<!-- 右侧菜单 -->
+<div class="right-nav">
+	<ul class="r-with-gotop">
+		<li class="r-toolbar-item">
+			<a href="udai_welcome.html" class="r-item-hd">
+				<i class="iconfont icon-user" data-badge="0"></i>
+				<div class="r-tip__box"><span class="r-tip-text">用户中心</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item">
+			<a href="udai_shopcart.html" class="r-item-hd">
+				<i class="iconfont icon-cart"></i>
+				<div class="r-tip__box"><span class="r-tip-text">购物车</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item">
+			<a href="udai_collection.html" class="r-item-hd">
+				<i class="iconfont icon-aixin"></i>
+				<div class="r-tip__box"><span class="r-tip-text">我的收藏</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item">
+			<a href="" class="r-item-hd">
+				<i class="iconfont icon-liaotian"></i>
+				<div class="r-tip__box"><span class="r-tip-text">联系客服</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item">
+			<a href="issues.html" class="r-item-hd">
+				<i class="iconfont icon-liuyan"></i>
+				<div class="r-tip__box"><span class="r-tip-text">留言反馈</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item to-top">
+			<i class="iconfont icon-top"></i>
+			<div class="r-tip__box"><span class="r-tip-text">返回顶部</span></div>
+		</li>
+	</ul>
+	<script>
+		//$(document).ready(function(){ $('.to-top').toTop({position:false}) });
+	</script>
+</div>
+{include file='../application/index/view/common/footer.html'}
+<script type="text/javascript">
+	var flag = 0;
+	var page = 1;
+
+	showPage();
+	$('#all').click(function(){
+		flag = 0;
+		page = 1;
+		showPage();
+	});
+	$('#pay').click(function(){
+		flag = 1;
+		page = 1;
+		showPage();
+	});
+	$('#emit').click(function(){
+		flag = 2;
+		page = 1;
+		showPage();
+	});
+	$('#eval').click(function(){
+		flag = 3;
+		page = 1;
+		showPage();
+	});
+	$('body').on('click','.jumpPage',function(){
+		$('.jumpPage').removeClass('select');
+		$(this).addClass('select');
+		page = $(this).html();
+		showPage();
+	});						
+	$('body').on('click','.prevPage',function(){
+		page--;
+		showPage();
+
+	});	
+	$('body').on('click','.nextPage',function(){
+		page++;
+		showPage();
+	});	
+	$('body').on('click','.del',function(){
+		var id = $(this).attr('dataIndex');
+		var msg = confirm('你确认删除当前订单吗');
+		if (msg) {
+			$.post("{:url('index/order/delOrder')}",{'del':1,"id":id},function(data){
+				alert(data['msg']);
+				$(location).attr('href',data['url']);
+			});
+		}
+	});
+	function showPage()
+	{
+		$('#data_all').removeClass('in');
+		$('#data_all').removeClass('active');
+		$('#data_pay').removeClass('in');
+		$('#data_pay').removeClass('active');
+		$('#data_emit').removeClass('in');
+		$('#data_emit').removeClass('active');
+		$('#data_eval').removeClass('in');
+		$('#data_eval').removeClass('active');
+		var pageCount;
+		if (flag==0) {
+			id = 'all';
+		}else if(flag==1){
+			id = 'pay';
+		}else if(flag==2){
+			id = 'emit';
+		}else if(flag==3){
+			id = 'eval';
+		}
+		$('#data_'+id).empty();
+		$('#data_'+id).addClass('active');
+		$('#data_'+id).addClass('in');
+
+		$.post("{:url('index/order/showOrder')}" , {"flag":flag,"num":5,"page":page},function(data){
+			len = data['data'].length;
+			var str ='<table class="table text-center">'+
+					'<tr>'+
+						'<th width="380">订单信息</th>'+
+						'<th width="85">单价</th>'+
+						'<th width="85">数量</th>'+
+						'<th width="120">实付款</th>'+
+						'<th width="120">交易状态</th>'+
+						'<th width="120">交易操作</th>'+
+					'</tr>';
+			//$('#data_'+id).prepend(
+			for(var i=0;i<data['data'].length;i++){
+				str+='<tr class="order-item">'+
+					'<td>'+
+						'<label>'+
+							'<a href="udai_order_detail.html" class="num">'+
+								data['data'][i]['create_time']+'订单号:'+data['data'][i]['order_num_alias']+
+							'</a>'+
+							'<div class="card">'+
+								'<div class="img"><img src="/'+data['data'][i]['goods']['image']+'" alt="" class="cover"></div>'+
+								'<div class="name ep2">'+data['data'][i]['goods']['name']+'</div>'+
+								'<div class="format">';
+
+								if(data['data'][i]['color']){
+									str+='颜色分类：'+data['data'][i]['color'];
+								}
+
+								if (data['data'][i]['size']) {
+									str+='尺码：'+data['data'][i]['size'];
+								}
+								
+							str+='</div>'+
+						'</label>'+
+					'</td>'+
+					'<td>￥'+data['data'][i]['goods']['price']+'</td>'+
+					'<td>'+data['total']+'</td>'+
+					'<td>￥'+data['data'][i]['pay_price']+'<br><span class="fz12 c6 text-nowrap">(含运费: ¥0.00)</span></td>'+
+					'<td class="state">'+
+						'<a class="but c6">'+data['data'][i]['status']+'</a>'+
+						'<a href="detail?id='+data['data'][i]['id']+'" class="but c9">订单详情</a>'+
+					'</td>'+
+					'<td class="order">';
+						if (data['data'][i]['status']=='交易成功'||data['data'][i]['status']=='订单已取消'||data['data'][i]['status']=='已评价'||data['data'][i]['status']=='已追评') {
+							str+='<div class="del" dataIndex="'+data['data'][i]['id']+'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></div>';
+						}
+						
+						if(data['data'][i]['status'].indexOf('等待')!=-1){
+							str+='<a href="'+"{:url('index/order/zhong')}?id="+data['data'][i]['id']+'" class="but but-primary">';
+							str +=data['data'][i]['status'].replace('等待','确认');
+							str+='</a>';
+						}else{
+							str+=data['data'][i]['status']+'<br/>';
+						}
+
+						
+						if(data['data'][i]['status']=='交易成功'){
+							str+='<a  href="'+"{:url('index/order/zhong')}?id="+data['data'][i]['id']+'" class="but but-link">评价</a>';
+						}
+						
+						if(data['data'][i]['status']=='等待付款'){
+							str +='<a  href="'+"{:url('index/order/cancel')}?id="+data['data'][i]['id']+'" class="but c3">取消订单</a>';
+						}else if(data['data'][i]['status']!='订单已取消'&&data['data'][i]['status']!='已评价'&&data['data'][i]['status']!='已追评'){
+							str+='<a href="refund?id='+data['data'][i]['id']+'">退款/退货</a>';
+						}
+						str+='</td></tr>';
+						
+			}
+
+			str+='</table>';
+			if (len>=1) {
+				str+='<div class="page text-right clearfix style="margin-top: 40px">';
+				var page = data['page'];
+				var prev = data['prev'];
+				pageCount = data['pageCount'];
+				if(page>1){
+					str+='<a class="prevPage">上一页</a>';
+				}
+				for(var i=1;i<=pageCount;i++){
+				 	if(page==i){
+				 		str+='<a class="select jumpPage">'+i+'</a>';
+				 	}else{
+				 		str+='<a class="jumpPage">'+i+'</a>';
+				 	}
+				}
+				if(page<pageCount){
+					str+='<a class="nextPage">下一页</a>';
+				}
+				str+='<a class="disabled">'+page+'/'+pageCount+'页</a>';
+				str+='</div>';
+								
+			}else{
+				str+='<tr class="order-empty"><td colspan=6>'+
+						'<div class="empty-msg">最近没有任何订单，家里好像缺了点什么！<br><a href="'+"{:url('index/index/index')}"+'">要不瞧瞧去？</a></div>'+
+					'</td></tr>';
+			}
+			$('#data_'+id).append(str);	
+		});
+	}
+	
+</script>

@@ -1,0 +1,191 @@
+{include file="../application/index/view/common/top.html" /}
+<!-- 顶部标题 -->
+<div class="bgf5 clearfix">
+	<div class="top-user">
+		<div class="inner">
+			<a class="logo" href="index.html"><img src="__IMG__/icons/logo.jpg" alt="U袋网" class="cover"></a>
+			<div class="title">个人中心</div>
+		</div>
+	</div>
+</div>
+<div class="content clearfix bgf5">
+	<section class="user-center inner clearfix">
+		{include file="../application/index/view/common/infoleft.html" /}
+		<div class="pull-right">
+			<div class="user-content__box clearfix bgf">
+				<div class="title">订单中心-确认收货</div>
+				<div class="order-info__box">
+					<div class="step-flow-box" style="width: 800px;margin: 0 auto 24px">
+						<div class="step-flow__bd">
+							<div class="step-flow__li step-flow__li_done">
+								<div class="step-flow__state"><i class="iconfont icon-ok"></i></div>
+								<p class="step-flow__title-top">拍下商品</p>
+							</div>
+							<div class="step-flow__line step-flow__li_done">
+								<div class="step-flow__process"></div>
+							</div>
+							<div class="step-flow__li step-flow__li_done">
+								<div class="step-flow__state"><i class="iconfont icon-ok"></i></div>
+								<p class="step-flow__title-top">付款</p>
+							</div>
+							<div class="step-flow__line step-flow__li_done">
+								<div class="step-flow__process"></div>
+							</div>
+							<div class="step-flow__li step-flow__li_done">
+								<div class="step-flow__state"><i class="iconfont icon-ok"></i></div>
+								<p class="step-flow__title-top">卖家发货</p>
+							</div>
+							<div class="step-flow__line step-flow__line_ing">
+								<div class="step-flow__process"></div>
+							</div>
+							<div class="step-flow__li">
+								<div class="step-flow__state"><i class="iconfont icon-ok"></i></div>
+								<p class="step-flow__title-top">买家确认收货</p>
+							</div>
+						</div>
+					</div>
+					<p class="fz18 cr">我已收到货，同意付款。</p>
+					<div class="table-thead">
+						<div class="tdf3">商品</div>
+						<div class="tdf1">数量</div>
+						<div class="tdf1">单价</div>
+						<div class="tdf2">优惠</div>
+						<div class="tdf1">总价</div>
+						<div class="tdf1">运费</div>
+					</div>
+					<div class="order-item__list">
+						<div class="item">
+							<div class="tdf3">
+								<a href="item_show.html"><div class="img"><img src="/{$data['getGoods']['image']}" alt="" class="cover"></div>
+								<div class="ep2 c6">{$data['getGoods']['name']}</div></a>
+								<div class="attr ep">{if $data['color']}颜色分类：{$data['color']} {/if} {if $data['size']}尺码：{$data['size']}{/if}</div>
+							</div>
+							<div class="tdf1">{$data['total']}</div>
+							<div class="tdf1">¥{$data['getGoods']['price']}</div>
+							<div class="tdf2">
+								{if $data['getGoods']['discount']!=10}
+								<div class="ep2">活动{$data['getGoods']['discount']}折优惠<br>优惠：¥{$data['getGoods']['discount']*$data['getGoods']['price']*0.1}</div>{/if}
+							</div>
+							<div class="tdf1">¥{$data['pay_price']}</div>
+							<div class="tdf1">
+								<div class="ep2">快递<br>¥0.00</div>
+							</div>
+						</div>
+					</div>
+					{if $data['status']}
+					<div class="price-total">
+						{if $data['getGoods']['discount']!=10}
+						<div class="fz12 c9">使用优惠券{$data['getGoods']['discount']}折优惠<br>优惠：¥{$data['getGoods']['discount']*$data['getGoods']['price']*0.1}</div>{/if}
+						<div class="fz18 c6">实付款：<b class="cr">¥{$data['pay_price']}</b></div>
+						<div class="fz12 c9">（本单可获 <span class="c6">{$data['getGoods']['points']}</span> 积分）</div>
+					</div>
+					{/if}
+					<hr>
+					<div class="order-info">
+						订单编号：<span class="c6">{$data['order_num_alias']}</span><br>
+						{if $data['payment_num']}<span class="c6">支付宝交易号：{$data['payment_num']}</span>{/if}<br>
+						收货地址：<span class="c6">{$data['address']['dizhi']} , {$data['address']['name']}，{$data['address']['phone']}</span><br>
+						成交时间：<span class="c6">{$data['success_time']}</span>
+					</div>
+					<div class="modify_div clearfix">
+						<form action="" class="user-setting__form" role="form">
+							<ul class="fz12 text-nowrap">
+								<li class="cr">◆ 请收到货后，再确认收货！否则我们可能无法为您保障权益！</li>
+								<li class="c6">◆ 如果您想申请退款，<a href="udai_apply_return.html">请点击这里</a></li>
+							</ul>
+							<div class="form-group">
+								<label form="pay-pwd" class="iptut-box-nick posr">
+									<span class="cr">支付密码：</span>
+									<input type="password" id="pay-pwd" maxlength="6">
+									<div class="iptut-fake-box"></div>
+									<p style="font-weight: normal">请输入6位数字支付密码 <a href="udai_paypwd_modify.html">忘记支付密码？</a></p>
+								</label>
+							</div>
+							<div class="form-group" style="line-height: 1em">
+								<div class="col-sm-offset-2 col-sm-10">
+									<button type="button" class="but" id="submitBtn">确认已收货</button>
+								</div>
+							</div>
+							<script>
+								$(document).ready(function(){
+									$('#submitBtn').click(function(){
+										var id = {$data['id']};
+										$.post("{:url('index/order/submitrepe')}",{"id":id,'mima':$('#pay-pwd').val()},function(data){
+											alert(data['msg']);
+											$(location).attr('href' , data['url']);
+										});
+									});
+
+									var teml = '<div class="pwd-digit"></div>',
+										$fake_box = $('.iptut-fake-box');
+									$fake_box.empty().html(teml + teml + teml + teml + teml + teml)
+									$fake_box.html()
+									$('#pay-pwd').bind('input propertychange focus',function() {
+										$fake_box.empty();
+										for (var i = 0; i < 6; i++) {
+											var $temp = $(teml);
+											if ($(this).val().length > i) {
+												$temp.addClass('active')
+											};
+											if ($(this).val().length == i) {
+												$temp.addClass('current')
+											};
+											$fake_box.append($temp);
+										}
+									});
+									$('#pay-pwd').bind('blur',function() {
+										$fake_box.find('.pwd-digit').removeClass('current');
+									});
+								});
+							</script>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+<!-- 右侧菜单 -->
+<div class="right-nav">
+	<ul class="r-with-gotop">
+		<li class="r-toolbar-item">
+			<a href="udai_welcome.html" class="r-item-hd">
+				<i class="iconfont icon-user" data-badge="0"></i>
+				<div class="r-tip__box"><span class="r-tip-text">用户中心</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item">
+			<a href="udai_shopcart.html" class="r-item-hd">
+				<i class="iconfont icon-cart"></i>
+				<div class="r-tip__box"><span class="r-tip-text">购物车</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item">
+			<a href="udai_collection.html" class="r-item-hd">
+				<i class="iconfont icon-aixin"></i>
+				<div class="r-tip__box"><span class="r-tip-text">我的收藏</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item">
+			<a href="" class="r-item-hd">
+				<i class="iconfont icon-liaotian"></i>
+				<div class="r-tip__box"><span class="r-tip-text">联系客服</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item">
+			<a href="issues.html" class="r-item-hd">
+				<i class="iconfont icon-liuyan"></i>
+				<div class="r-tip__box"><span class="r-tip-text">留言反馈</span></div>
+			</a>
+		</li>
+		<li class="r-toolbar-item to-top">
+			<i class="iconfont icon-top"></i>
+			<div class="r-tip__box"><span class="r-tip-text">返回顶部</span></div>
+		</li>
+	</ul>
+	<script>
+		//$(document).ready(function(){ $('.to-top').toTop({position:false}) });
+	</script>
+</div>
+<!-- 底部信息 -->
+{include file='../application/index/view/common/footer.html'}

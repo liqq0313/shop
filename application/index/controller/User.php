@@ -11,16 +11,6 @@ class User extends Auth
 		return $this->fetch();
 	}
 
-	//我的订单
-	public function order()
-	{
-		$uid = session('user')['u_id'];
-		$data = Order::where(['user_id'=>$uid])->select();
-
-		$this->assign('data' , $data);
-		return $this->fetch();
-	}
-
 	//收藏
 	public function collection()
 	{

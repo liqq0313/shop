@@ -1,0 +1,103 @@
+{include file='common/meta' /}
+<title>商品分类设置</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页
+	<span class="c-gray en">&gt;</span>
+	商品分类管理
+	<span class="c-gray en">&gt;</span>
+	商品分类设置
+	<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
+<div class="page-container">
+	<form action="{:url('admin/category/index')}" method="post">
+	<div class="text-c">
+		<input type="text" name="keyword" id="" placeholder="分类名称" style="width:250px" class="input-text" value="{if condition='!empty($keyword) eq true'}{$keyword}{/if}">
+		<button name="" id="" class="btn btn-success" type="submit"><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+	</div>
+	</form>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<span class="l">
+		<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+		<a class="btn btn-primary radius" onclick="category_add('添加商品分类','{:url('admin/category/addCate')}')" href="javascript:;"><i class="Hui-iconfont">&#xe600;</i> 添加分类</a>
+		</span>
+		<span class="r">共有数据：<strong>{$total}</strong> 条</span>
+	</div>
+	<div class="mt-20">
+		<table class="table table-border table-bordered table-hover table-bg table-sort">
+			<thead>
+				<tr class="text-c">
+					<th width="25"><input type="checkbox" name="" value=""></th>
+					<th width="80">ID</th>
+					<th width="80">排序</th>
+					<th>分类名称</th>
+					<th>封面图片</th>
+					<th width="100">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{foreach $data as $value}
+				<tr class="text-c">
+					<td><input type="checkbox" name="" value=""></td>
+					<td>{$value.category_id}</td>
+					<td>{$value.sort_order}</td>
+					{if substr_count($value.path,',')==1}
+					<td>{$value.name}</td>
+					{elseif substr_count($value.path,',')==2}
+					<td>--&nbsp;--&nbsp;{$value.name}</td>
+					{elseif substr_count($value.path,',')==3}
+					<td>--&nbsp;--&nbsp;--&nbsp;--&nbsp;{$value.name}</td>
+					{/if}
+					<td><img src="__IMG__/{$value.image}" height="50"></td>
+					<td class="f-14"><a title="编辑" href="javascript:;" onclick="category_edit('商品分类编辑','{:url('admin/category/updateCate',array('id'=>$value['category_id']))}','{$value.category_id}','800','700')" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
+						<a title="删除" href="javascript:;" onclick="category_del(this,'{$value.category_id}')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a></td>
+				</tr>
+				{/foreach}
+			</tbody>
+		</table>
+	</div>
+</div>
+{include file='common/footer' /}
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__ADMIN__/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript">
+// $('.table-sort').dataTable({
+// 	"aaSorting": [[ 1, "desc" ]],//默认第几个排序
+// 	"bStateSave": true,//状态保存
+// 	"aoColumnDefs": [
+// 	  //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
+// 	  {"orderable":false,"aTargets":[0,4]}// 制定列不参与排序
+// 	]
+// });
+
+/*分类-添加*/
+function category_add(title,url,w,h){
+	layer_show(title,url,w,h);
+}
+/*分类-编辑*/
+function category_edit(title,url,id,w,h){
+	layer_show(title,url,w,h);
+}
+/*分类-删除*/
+function category_del(obj,id){
+	layer.confirm('确认要删除吗？',function(index){
+		$.post(
+		'{:url('admin/category/delCate')}',
+		{id:id},
+		function(data){
+			if(data.status == 1){
+            	$(obj).parents("tr").remove();
+				layer.msg('已删除!',{icon:1,time:1000});
+            }else{
+            	var msg = data.msg;
+            	layer.msg(msg,{icon:2,time:2000});
+            }
+		});	
+	});
+}
+</script>
+</body>
+</html>

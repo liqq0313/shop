@@ -1,0 +1,142 @@
+{include file='common/meta' /}
+<title>分类设置</title>
+</head>
+<body>
+<div class="page-container">
+	<form action="" method="post" class="form form-horizontal" id="form-category-add">
+		<div id="tab-category" class="HuiTab">
+			<div class="tabBar cl">
+				<span>基本设置</span>
+			</div>
+			<div class="tabCon">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">
+						<span class="c-red">*</span>
+						上级菜单：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<span class="select-box">
+						<select class="select"  id="pid" name="pid" >
+							{foreach $cateName as $value}
+							{if substr_count($value.path,',')==1}
+							<option value="{$value.category_id}">{$value.name}</option>
+							{elseif substr_count($value.path,',')==2}
+							<option value="{$value.category_id}">--&nbsp;{$value.name}</option>		
+							{elseif substr_count($value.path,',')==3}
+							<option value="{$value.category_id}">--&nbsp;--&nbsp;{$value.name}</option>
+							{/if}	
+							{/foreach}
+						</select>
+						</span>
+					</div>
+					<div class="col-3">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">
+						<span class="c-red">*</span>
+						菜单名称：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" value="{$cate?$cate['name']:''}" placeholder="" id="name" name="name">
+					</div>
+					<div class="col-3">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-3">排序：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" value="{$cate?$cate['sort_order']:''}" placeholder="" id="sort_order" name="sort_order">
+					</div>
+					<div class="col-3">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row cl">
+			<div class="col-9 col-offset-3">
+				<input class="btn btn-primary radius" type="button" onclick="check();" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+				<input type="hidden" name="category_id" value="{$cate?$cate['category_id']:''}">
+			</div>
+		</div>
+	</form>
+</div>
+{include file='common/footer' /}
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__ADMIN__/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/jquery.validate.js"></script> 
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/validate-methods.js"></script> 
+<script type="text/javascript" src="__ADMIN__/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('.skin-minimal input').iCheck({
+		checkboxClass: 'icheckbox-blue',
+		radioClass: 'iradio-blue',
+		increaseArea: '20%'
+	});
+	
+	$("#tab-category").Huitab({
+		index:0
+	});
+	$("#form-category-add").validate({
+		rules:{
+			
+		},
+		onkeyup:false,
+		focusCleanup:true,
+		success:"valid",
+		submitHandler:function(form){
+			//$(form).ajaxSubmit();
+			var index = parent.layer.getFrameIndex(window.name);
+			//parent.$('.btn-refresh').click();
+			parent.layer.close(index);
+		}
+	});
+});
+
+
+function check(){
+    var name = $('#name').val();
+    var pid = $('#pid').val();
+    var sort_order = $('#sort_order').val();
+    var category_id = $("input[name='category_id']").val();
+    if(name == ''){
+        layer.msg('分类名称不可为空',{icon:2,time:2000});
+        return false;
+    }
+    var reg = /^[\u4E00-\u9FA5]{1,5}$/;
+	/*if(!reg.test(name)) {
+	    // alert("名称只支持中文字符");
+	    layer.msg('分类名称只支持中文字符',{icon:2,time:2000});
+	    return false;
+	}*/
+	var tmp_url = '';
+    if(category_id){
+        tmp_url = "{:url('admin/category/updateCate')}";
+    }else{
+        tmp_url = "{:url('admin/category/addCate')}";
+    }
+
+    $.post(
+    	tmp_url,
+    	{name:name,pid:pid,sort_order:sort_order,category_id:category_id}, 
+    	function (data) {
+	        var msgs = data.msg;
+	        if(data.status == 1){
+	        	layer.msg(msgs, {
+				  icon: 1,
+				  time: 2000 //2秒关闭（如果不配置，默认是3秒）
+				}, function(){
+				  	var index = parent.layer.getFrameIndex(window.name);
+					parent.$('.btn-refresh').click();
+					window.parent.location.reload();
+					parent.layer.close(index);
+				}); 
+	        }else{
+	            layer.msg(msgs,{icon:2,time:2000});
+	        }
+    });
+}
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

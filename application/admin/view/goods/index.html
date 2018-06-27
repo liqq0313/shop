@@ -1,16 +1,4 @@
-﻿<!DOCTYPE HTML>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="renderer" content="webkit|ie-comp|ie-stand">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-<link rel="stylesheet" type="text/css" href="__ADMIN__/h-ui/css/H-ui.min.css" />
-<link rel="stylesheet" type="text/css" href="__ADMIN__/h-ui.admin/css/H-ui.admin.css" />
-<link rel="stylesheet" type="text/css" href="__ADMIN__/lib/Hui-iconfont/1.0.8/iconfont.css" />
-<link rel="stylesheet" type="text/css" href="__ADMIN__/h-ui.admin/skin/default/skin.css" id="skin" />
-<link rel="stylesheet" type="text/css" href="__ADMIN__/h-ui.admin/css/style.css" />
+﻿{include file='common/meta'}
 <title>商品列表</title>
 </head>
 <body>
@@ -19,7 +7,7 @@
 	<div class="cl pd-5 bg-1 bk-gray"> <span class="l"><a class="btn btn-primary radius goods_add" href="javascript:;" ><i class="Hui-iconfont">&#xe600;</i> 新增</a></span></div>
 	<table class="table table_list table_striped table-bordered margin-sx">
 		<tr>
-		<th><input type="text" name="" class="input-text" placeholder="输入商品名称"></th>
+		<th><input type="text" name="keyword" class="input-text" placeholder="输入商品名称"></th>
 		<th><select name="category_big">
 			</select>
 			<select name="category_second">		
@@ -36,33 +24,14 @@
 		</tr>
 	</table>
 	<div class="mt-20">
-		<table class="table table-border table-bordered table-bg" id="table">
-			<thead>
-			  <tr>
-			   <th width="100">ID</th>
-			   <th width="100">商品编号</th>
-			   <th width="100">商品</th>
-			   <th>商品名称</th>
-			   <th width="100">分类</th>
-			   <th width="100">价格</th>
-			   <th width="100">数量</th>
-			   <th width="150">添加日期</th>
-			   <th width="100">状态</th>
-			   <th width="220">操作</th>
-			   </tr>   
-			</thead>
+		<table class="table table-border table-bordered table-bg" id="table_goods">
 		</table>
+		<div class="page r btn-group" style="margin: 40px"></div>
 	</div>
 </div>
-
-<!--_footer 作为公共模版分离出去-->
-<script type="text/javascript" src="__ADMIN__/lib/jquery/1.9.1/jquery.min.js"></script> 
-<script type="text/javascript" src="__ADMIN__/lib/layer/2.4/layer.js"></script>
-<script type="text/javascript" src="__ADMIN__/h-ui/js/H-ui.min.js"></script> 
-<script type="text/javascript" src="__ADMIN__/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
-
-<script type="text/javascript" src="__ADMIN__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
-<!-- <script type="text/javascript" src="lib/laypage/1.2/laypage.js"></script> -->
+{include file='common/footer'}
+<!-- <script type="text/javascript" src="__ADMIN__/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
+<script type="text/javascript" src="__ADMIN__/lib/laypage/1.2/laypage.js"></script> -->
 <script type="text/javascript">
 
 showCategory($("select[name='category_big']") , 0);
@@ -103,7 +72,83 @@ $("select[name='category_second']").change(function(){
 	showCategory($("select[name='category_last']") , $(this).val());
 });
 
-$("#table").dataTable({
+$('body').on('click','.jumpPage',function(){
+	$('.jumpPage').removeClass('select');
+	$(this).addClass('select');
+	page = $(this).html();
+	showPage();
+});						
+$('body').on('click','.prevPage',function(){
+	page--;
+	showPage();
+
+});	
+$('body').on('click','.nextPage',function(){
+	page++;
+	showPage();
+});
+
+var page=1;
+var num=5;
+var len;
+var pageCount;
+
+showPage();
+function showPage()
+{
+	$('.page').empty();
+	$("#table_goods").empty();
+
+	var param = {"page":page,"num":num};
+	var str = '<tr><th width="100">ID</th><th width="100">商品编号</th>'+
+			   '<th width="100">商品</th><th width="160">商品名称</th><th width="100">分类</th><th width="100">价格</th><th width="100">数量</th><th width="150">添加日期</th><th width="100">状态</th><th width="220">操作</th></tr>';
+	str +=
+	$.post("{:url('admin/goods/showGoods')}",param,function(dat){
+		len = dat['data'].length;
+		for(var i=0;i<len;i++)
+		{
+			str+='<tr>';
+			str+='<td>'+dat['data'][i]['goods_id']+'</td>';
+			str+='<td>'+dat['data'][i]['model']+'</td>';
+			str+='<td><img src="/'+dat['data'][i]['image']+'" width="150"/></td>';
+			str+='<td>'+dat['data'][i]['name']+'</td>';
+			str+='<td>'+dat['data'][i]['cate']+'</td>';
+			str+='<td>'+dat['data'][i]['price']+'</td>';
+			str+='<td>'+dat['data'][i]['quantity']+'</td>';
+			str+='<td>'+dat['data'][i]['create_time']+'</td>';
+			str+='<td>';
+			if(dat['data'][i]['status']){str+='上架';}else{str+='下架';}
+			str+='</td>';
+			str+='<td class="td-manage"><a class="ml-5 edit" title="编辑" href="javascript:;"  gid="'+dat['data'][i]['goods_id']+'" style="text-decoration:none" onclick="edit(this,'+dat['data'][i]['goods_id']+')"><i class="Hui-iconfont">&#xe6df;</i></a><a title="删除" href="javascript:;" class="ml-5 del" gid="'+dat['data'][i]['goods_id']+'" style="text-decoration:none" onclick="del(this,'+dat['data'][i]['goods_id']+')" ><i class="Hui-iconfont">&#xe6e2;</i></a></td>';
+			str+='</tr>';
+		}
+		$("#table_goods").append(str);
+
+		
+		str = '';
+		var page = dat['page'];
+		var prev = dat['prev'];
+		pageCount = dat['pageCount'];
+		if(page>1){
+			str+='<a class="btn btn-default radius prevPage">上一页</a>';
+		}
+		for(var i=1;i<=pageCount;i++){
+		 	if(page==i){
+		 		str+='<a class="btn btn-primary radius jumpPage">'+i+'</a>';
+		 	}else{
+		 		str+='<a class="btn btn-default radius jumpPage">'+i+'</a>';
+		 	}
+		}
+		if(page<pageCount){
+			str+='<a class="btn btn-default radius nextPage">下一页</a>';
+		}
+		str+='<a class="btn btn-default">'+page+'/'+pageCount+'页</a>';
+		$('.page').append(str);
+
+	});
+}
+
+/*$("#table_goods").dataTable({
 	"width":"100%",	
 	"bLengthChange":false,
 	"iDisplayLength": 10,
@@ -113,15 +158,13 @@ $("#table").dataTable({
     "aoColumnDefs": [{"orderable":false,"aTargets":[0,8,9]}],
 	"processing": true,
 	"serverSide": true,
-	"ajax" : "{:url('admin/goods/showGoods')}",
+	"ajax" : '{:url('admin/goods/showGoods')}',
     "columns": [
         {"data": "goods_id", "bSortable": false},
         {"data": "model"},
         {"data": "image" , render: function (data) {
         	if (!data) {return;}
-        	return data;
-        	//data = data.substr(0 , data.lastIndexOf(".")) + '-50*50' + data.substr(data.lastIndexOf("."));
-        	//return '<img src="__U_IMG__/cache/'+data+'"/>';
+        	return '<img src="/'+data+'" width="150"/>';
         } },
         {"data": "name"},
         {"data": "cate"},
@@ -138,60 +181,48 @@ $("#table").dataTable({
         	return edit + del;
         }}
       ]
-    });
+    });*/
+
 
 /*商品-添加*/
-$('.goods_add').click(function(){
+$('body').on('click','.goods_add',function(){
 	var index = layer.open({
 		type: 2,
 		title: "商品添加",
-		content: "{:url('admin/goods/add')}"
+		content: "{:url('admin/goods/addGoods')}"
 	});
 	layer.full(index);
-});	
+});
 
 /*商品-编辑*/
-$('#table').on('click','.edit',function(){
-	var gid = $(this).attr('gid');
-	var title = $(this).attr('title');
+function edit(obj,id)
+{
+	var title = '商品编辑';
 	var index = layer.open({
 		type: 2,
 		title: title,
-		content: "{:url('admin/goods/edit')}?id="+gid
+		content: "{:url('admin/goods/updateGoods')}?id="+id
 	});
 	layer.full(index);
-});	
+}
 
 /*商品-删除*/
-$('#table').on('click','.del',function(){
-	/*layer.confirm('确认要删除吗？',function(index){
-		$.ajax({
-			type: 'POST',
-			url: '',
-			dataType: 'json',
-			success: function(data){
-				//$(obj).parents("tr").remove();
-				layer.msg('已删除!',{icon:1,time:1000});
-			},
-			error:function(data) {
-				console.log(data.msg);
-			},
-		});		
-	});*/
-});
-/*
-$('#table').on('click','.del',function(){
-    var gid = $(this).attr('gid');
-    layer.confirm('确认要删除吗？',{icon:0,},function(){
-    	$.post("{:url('admin/goods/del')}",
-    		{gid:gid},
-    		function(data){
-    			alert(JSON.stringify(data));
-    		})
-    	layer.close();
+function del(obj,id){
+	layer.confirm('商品删除须谨慎，确认要删除吗？',function(index){
+		$.post(
+			'{:url('admin/goods/delGoods')}',
+			{id:id},
+			function(data){
+				if(data.status == 1){
+                	$(obj).parents("tr").remove();
+					layer.msg('已删除!',{icon:1,time:1000});
+	            }else{
+	            	var msg = data.msg;
+	            	layer.msg(msg,{icon:2,time:2000});
+	            }
+		});
 	});
-});*/
-
+}
 </script>
 </body>
 </html>

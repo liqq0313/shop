@@ -111,24 +111,24 @@ if ($cleanupTargetDir) {
     closedir($dir);
 }
 
-$id = isset($_REQUEST['id'])?:0;
+
 // Open temp file
 if (!$out = @fopen("{$filePath}_{$chunk}.parttmp", "wb")) {
-    die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : $id}');
+    die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
 }
 
 if (!empty($_FILES)) {
     if ($_FILES["file"]["error"] || !is_uploaded_file($_FILES["file"]["tmp_name"])) {
-        die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "$id"}');
+        die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
     }
 
     // Read binary input stream and append it to temp file
     if (!$in = @fopen($_FILES["file"]["tmp_name"], "rb")) {
-        die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "$id"}');
+        die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
     }
 } else {
     if (!$in = @fopen("php://input", "rb")) {
-        die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "$id"}');
+        die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
     }
 }
 
@@ -174,4 +174,4 @@ if ( $done ) {
 }
 
 // Return Success JSON-RPC response
-//die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');
+die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');

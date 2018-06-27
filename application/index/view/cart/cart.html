@@ -36,11 +36,13 @@
 										"dataType":"json",
 										"async":true,
 										"success":function(data){
-											var len = data['cart_info'].length;
-											//alert(len);
-											//alert(data[0].price);
-											for(var i=0;i<len;i++){
-												$('tbody').append('<tr><th scope="row"><label class="checked-label"><input type="checkbox" class="checks"><i></i><div class="img"><img src="/'+data['goods_info'][i].image+'" alt="" class="cover"></div></label></th><td><div class="name ep3">'+data['goods_info'][i].name+'</div><div class="type c9">颜色分类：'+data['cart_info'][i].color+'  尺码：'+data['cart_info'][i].size+'</div></td><td>'+data['goods_info'][i].price+'</td><td><div class="cart-num__box"><input type="button" class="sub" value="-"><input type="text" class="val" value="'+data['cart_info'][i].quantity+'" maxlength="2"><input type="button" class="add" value="+"></div></td><td class="real_price">￥'+data['goods_info'][i].price*data['goods_info'][i].discount*0.1+'</td><td><a href="">删除</a></td></tr>');
+											if(data['status']==1){
+												var len = data['cart_info'].length;
+												//alert(len);
+												//alert(data[0].price);
+												for(var i=0;i<len;i++){
+													$('tbody').append('<tr><th scope="row"><label class="checked-label"><input type="checkbox" class="checks"><i></i><div class="img"><img src="/'+data['goods_info'][i].image+'" alt="" class="cover"></div></label></th><td><div class="name ep3">'+data['goods_info'][i].name+'</div><div class="type c9">颜色分类：'+data['cart_info'][i].color+'  尺码：'+data['cart_info'][i].size+'</div></td><td>'+data['goods_info'][i].price+'</td><td><div class="cart-num__box"><input type="button" class="sub" value="-"><input type="text" class="val" value="'+data['cart_info'][i].quantity+'" maxlength="2"><input type="button" class="add" value="+"></div></td><td class="real_price">￥'+(data['goods_info'][i].price*data['goods_info'][i].discount*0.1).toFixed(2)+'</td><td><a class="del" href="javascript:;" dataIndex='+data['cart_info'][i].cart_id+'>删除</a></td></tr>');
+												}
 											}
 										}
 									});
@@ -49,11 +51,43 @@
 						</tbody>
 					</table>
 					<div class="user-form-group tags-box shopcart-submit pull-right">
-						<button type="submit" class="btn">提交订单</button>
+						<button class="btn" type="button">提交订单</button>
+						<script type="text/javascript">
+							$(function(){
+								$('.btn').click(function(){
+									var cart_id = '';
+									var money = $('.fz24').html();
+									$('tr').each(function(){
+										if($(this).find('.checks').prop('checked')){
+											cart_id += $(this).find('.del').attr('dataIndex').toString()+',';
+										}
+									});
+									if(cart_id!=''){
+										$.ajax({
+											"type":"post",
+											"url":"addOrder",
+											"dataType":"json",
+											"async":true,
+											"data":{'cart_id':cart_id},
+											"success":function(data){
+												if(data['status']==0){
+													alert(data['msg']);
+												}
+												if(data['status']==1){
+													window.location.href="{:url('index/cart/order')}";
+												}
+											}
+										});
+									}else{
+										alert('请选择商品');
+									}
+								});
+							});
+						</script>
 					</div>
 					<div class="checkbox shopcart-total">
 						<label><input type="checkbox" class="check-all"><i></i> 全选</label>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">删除</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="del-check">删除</a>
 						<div class="pull-right">
 							已选商品 <span class="goods_num">0</span> 件
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;合计（不含运费）
@@ -110,21 +144,31 @@
 								var price = 0;
 								var n = 0;					
 								$('tr').each(function(){
-										if($(this).find('.checks').prop('checked')){
-											count = $(this).find('.val').val();
-											p = Number($(this).find('.real_price').html().substr(1));
-											price = price+(p*count);
-											n++;
-											//alert(price);
-										}
-										// price += Number($(this).find('.real_price').html().substr(1));
-										// alert(price);
-										$('.fz24').html(price);
-										$('.goods_num').html(n);
-									});
+									if($(this).find('.checks').prop('checked')){
+										count = $(this).find('.val').val();
+										p = Number($(this).find('.real_price').html().substr(1));
+										price = price+(p*count);
+										n++;
+										//alert(price);
+									}
+									// price += Number($(this).find('.real_price').html().substr(1));
+									// alert(price);
+									$('.fz24').html(price);
+									$('.goods_num').html(n);
+								});
 							});
 							// 个数限制输入数字
 							$('input.val').onlyReg({reg: /[^0-9.]/g});
+							$('body').on('blur','input.val',function(){
+								$('tr').each(function(){
+									var total = $(this).find('.val').val();
+									var cart_id = $(this).find('.del').attr('dataIndex');
+									//alert(cart_id);
+									$.post("{:url('index/cart/updateCount')}",{'count':total,'cart_id':cart_id},function(data){
+
+									});
+								});
+							});
 							// 加减个数
 							$('body').on('click', '.sub,.add', function() {
 								var value = parseInt($(this).siblings('.val').val());
@@ -136,18 +180,71 @@
 								var price = 0;
 								var n = 0;					
 								$('tr').each(function(){
-										if($(this).find('.checks').prop('checked')){
-											count = $(this).find('.val').val();
-											p = Number($(this).find('.real_price').html().substr(1));
-											price = price+(p*count);
-											n++;
-											//alert(price);
-										}
-										// price += Number($(this).find('.real_price').html().substr(1));
-										// alert(price);
-										$('.fz24').html(price);
-										$('.goods_num').html(n);
+									if($(this).find('.checks').prop('checked')){
+										count = $(this).find('.val').val();
+										p = Number($(this).find('.real_price').html().substr(1));
+										price = price+(p*count);
+										n++;
+										//alert(price);
+									}
+									$('.fz24').html(price);
+									$('.goods_num').html(n);
+									// 写入商品数目
+									var total = $(this).find('.val').val();
+									var cart_id = $(this).find('.del').attr('dataIndex');
+									//alert(cart_id);
+									$.post("{:url('index/cart/updateCount')}",{'count':total,'cart_id':cart_id},function(data){
+
 									});
+								});
+							});
+							$('body').on('click','.del',function(){
+								var dataIndex = $(this).attr('dataIndex');
+								
+								//alert(dataIndex);
+								$.ajax({
+									"type":"post",
+									"url":"delCart",
+									"dataType":"json",
+									"async":true,
+									"data":{"dataIndex":dataIndex},
+									"success":function(data){
+										alert(data['msg']);
+										$("[dataIndex="+dataIndex+"]").parents('tr').remove('tr');
+									}
+								});
+							});
+							$('body').on('click','.del-check',function(){
+								var cart_id = '';
+								$('tr').each(function(){
+									if($(this).find('.checks').prop('checked')){
+										cart_id += $(this).find('.del').attr('dataIndex').toString()+',';
+									}
+								});
+								//alert(cart_id);
+								if(cart_id!=''){
+									$.ajax({
+										"type":"post",
+										"url":"delCheckCart",
+										"dataType":"json",
+										"async":true,
+										"data":{'cart_id':cart_id},
+										"success":function(data){
+											alert(data['msg']);
+											if(data['status']==1){
+												var dataIndex;
+												$('tr').each(function(){
+													if($(this).find('.checks').prop('checked')){
+														dataIndex = $(this).find('.del').attr('dataIndex');
+														$("[dataIndex="+dataIndex+"]").parents('tr').remove('tr');
+													}
+												});
+											}
+										}
+									});
+								}else{
+									alert('请选择商品');
+								}
 							});
 						});
 					</script>

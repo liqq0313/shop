@@ -123,7 +123,7 @@ class Item extends Auth
 			}
 		}else{
 			//var_dump(2);
-			if(isset($_COOKIE['shop_cart_info'])){
+			if(!empty($_COOKIE['shop_cart_info'])){
 				$cur_cart_array = unserialize(stripslashes($_COOKIE['shop_cart_info']));
 			}else{
 				$cur_cart_array = "";
@@ -137,8 +137,7 @@ class Item extends Auth
 					$cart_info[0]['size'] = input('post.size');
 				}
 				$cart_info[0]['quantity'] = $quantity;	
-				setcookie("shop_cart_info",serialize($cart_info));
-				//var_dump($_COOKIE['shop_cart_info']);
+				setcookie("shop_cart_info",serialize($cart_info),time()+3600*24,'/');
 			}else{
 					
 				$ar_keys = array_keys($cur_cart_array); 
@@ -172,9 +171,9 @@ class Item extends Auth
 						}
 						//var_dump($cur_cart_array);
 						//var_dump($cur_cart_array);
-						setcookie("shop_cart_info",serialize($cur_cart_array)); 
+						setcookie("shop_cart_info",serialize($cur_cart_array),time()+3600*24,'/'); 
+						//var_dump($_COOKIE['shop_cart_info']);die;
 						return json(['status'=>1,'msg'=>'添加成功']);
-						//setcookie("shop_cart_info",serialize($cur_cart_array));
 					}
 				}
 				$cur_cart_array[$max_array_keyid] = '';
@@ -186,23 +185,9 @@ class Item extends Auth
 				if(input('post.size')){
 					$cur_cart_array[$max_array_keyid]['size'] = input('post.size');
 				}
-				setcookie("shop_cart_info",serialize($cur_cart_array)); 
-				//var_dump(session('cart')[$goods_id]);
-				// $flag = 0;
-				// foreach(session('cart')[$goods_id] as $k=>$v){
-				// 	if($v==$arr){
-				// 		$arr['quantity'] = session('cart')[$goods_id][$k]['quantity']+$arr['quantity'];
-				// 		session('cart')[$goods_id][$k] = $arr;
-				// 		$flag = 1;
-				// 		return json(['status'=>1,'msg'=>'添加成功']);
-				// 	}
-				// }
-				// if($flag==0){
-				// 	session('cart')[$goods_id][] = $arr;
-					//setcookie('shop_cart_info','',time()-1);
-					//var_dump($cur_cart_array);
-				 	return json(['status'=>1,'msg'=>'添加成功']);
-				// }
+				setcookie("shop_cart_info",serialize($cur_cart_array),time()+3600*24,'/'); 
+
+				return json(['status'=>1,'msg'=>'添加成功']);
 			}
 		}
 

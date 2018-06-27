@@ -2,6 +2,7 @@
 namespace app\index\controller;
 use app\index\model\Order;
 use app\index\model\Comment;
+use app\index\model\Address;
 use think\Request;
 use think\Image;
 class Order extends Auth
@@ -276,6 +277,20 @@ class Order extends Auth
 			return json(['status'=>1,'msg'=>'订单已删除','url'=>'index/order/index']);
 		}else{
 			return json(['status'=>0,'msg'=>'订单删除失败','url'=>'index/order/index']);
+		}
+	}
+	public function joinOrder()
+	{
+		$user_id = session('user')['u_id'];
+		$order_num = input('post.order_num');
+		$count = count(Order::all(['user_id'=>$user_id,'order_num_alias'=>$order_num]));
+		if($count){
+			for($i=0;$i<$count;$i++){
+				$res = Order::where('user_id',$user_id)->where('order_num_alias',$order_num)->update(['status'=>0]);
+			}
+			return json(['status'=>1,'msg'=>'添加订单成功']);
+		}else{
+			return json(['status'=>0,'msg'=>'添加订单失败']);
 		}
 	}
 }

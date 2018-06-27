@@ -100,6 +100,11 @@ class Info extends Auth
 				$user->address_id = $result->id;
 				$user->save();
 			}
+			// if(!empty($_GET['flag'])){
+			// 	return json(['status'=>1 ,'msg' => '新增']);
+			// 	header("Location:index/cart/order");
+			// 	exit();
+			// }
 			return json(['status'=>1 ,'msg' => '新增成功']);
 		}else{
 			return json(['status'=>0 ,'msg' => '添加失败']);

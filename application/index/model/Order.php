@@ -6,7 +6,6 @@ class Order extends Model
 	public function getGoods(){
 		return $this->hasOne('goods' , 'goods_id' , 'goods_id');
 	}
-
 	//返回原有数据  不自动进行时间转换
     public function getCreateTimeAttr($time)
     {

@@ -85,12 +85,12 @@ class Auth extends Controller
 						$result = Cart::create($find);
 					}else{
 						$cart_id = $get_cart->cart_id;
-						$addnum = $get_cart->quantity+$quantity;
+						$addnum = $get_cart->quantity+$v['quantity'];
 						$result = Cart::where('cart_id',$cart_id)->update(['quantity'=>$addnum]);
 					}
 				}
+				setcookie('shop_cart_info',time()-1,'');
 			}
-			setcookie('shop_cart_info',time()-1,'','/');
 			return json(['status'=>1 ,'msg' => '登录成功' , 'url' =>url('index/index/index')]);
 		} else {
 			return json(['status'=>0 ,'msg' => '登录失败' , 'url' =>url('index/auth/login')]);

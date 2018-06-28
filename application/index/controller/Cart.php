@@ -29,7 +29,9 @@ class Cart extends Auth
 			}
 		}elseif(!empty($_COOKIE['shop_cart_info'])){
 			$cart_goods = unserialize(stripslashes($_COOKIE['shop_cart_info']));
-			//var_dump($_COOKIE['shop_cart_info']);die;
+			// $cart_goods = array_values($cart_goods);
+			// setcookie("shop_cart_info",serialize($cart_goods),time()+3600*24,'/');
+			//var_dump($cart_goods);die;
 			$len = count($cart_goods);
 			for($i=0;$i<$len;$i++){
 				$goods_info[$i] = Goods::get(['goods_id'=>$cart_goods[$i]['goods_id']]);
@@ -112,6 +114,7 @@ class Cart extends Auth
 	public function updateCount()
 	{
 		$cart_id = input('post.cart_id');
+		//var_dump($cart_id);
 		$count = input('post.count');
 		if(!empty(session('user'))&&!empty($cart_id)){
 			$cart = Cart::get(['cart_id'=>$cart_id]);
@@ -119,8 +122,15 @@ class Cart extends Auth
 			$res = $cart->save();
 		}elseif(!empty($_COOKIE['shop_cart_info'])){
 			$cart_info = unserialize(stripslashes($_COOKIE['shop_cart_info']));
-			$cart_info['cart_id']['quantity'] = $count;	
-			//var_dump($cart_info['cart_id']['quantity']);
+			//var_dump($cart_info);die;
+			// $color = $cart_info[$cart_id]['color'];
+			// $size = $cart_info[$cart_id]['size'];
+			// $goods_id = $cart_info[$cart_id]['goods_id'];
+			$cart_info[$cart_id]['quantity'] = $count;
+			// $cart_info[$cart_id]['goods_id'] = $goods_id;
+			// $cart_info[$cart_id]['color'] = $color;
+			// $cart_info[$cart_id]['size'] = $size;
+			//var_dump($cart_info[$cart_id]);die;
 			setcookie("shop_cart_info",serialize($cart_info),time()+3600*24,'/');
 			//return;
 		}

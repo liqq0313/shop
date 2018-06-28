@@ -6,6 +6,7 @@ use think\Validate;
 use think\Request;
 use lib\Ucpaas;
 use app\index\model\Cart;
+use think\Cookie;
 class Auth extends Controller
 {
 	protected $is_check_login = [''];
@@ -18,6 +19,9 @@ class Auth extends Controller
 		if ($this->is_login) {
 			$this->assign('username' , session('user')['username']);
 			$this->assign('grade' , session('user')['grade']);
+			if(!empty($_COOKIE['shop_cart_info'])){
+				Cookie::delete('shop_cart_info');
+			}
 		}
 
 		$this->assign('isLogin' , $this->is_login);
@@ -89,7 +93,7 @@ class Auth extends Controller
 						$result = Cart::where('cart_id',$cart_id)->update(['quantity'=>$addnum]);
 					}
 				}
-				setcookie('shop_cart_info',time()-1,'');
+				//Cookie::delete('shop_cart_info');
 			}
 			return json(['status'=>1 ,'msg' => '登录成功' , 'url' =>url('index/index/index')]);
 		} else {

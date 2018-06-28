@@ -180,22 +180,25 @@
 								var price = 0;
 								var n = 0;					
 								$('tr').each(function(){
-									if($(this).find('.checks').prop('checked')){
-										count = $(this).find('.val').val();
-										p = Number($(this).find('.real_price').html().substr(1));
-										price = price+(p*count);
-										n++;
-										//alert(price);
-									}
-									$('.fz24').html(price);
-									$('.goods_num').html(n);
-									// 写入商品数目
-									var total = $(this).find('.val').val();
-									var cart_id = $(this).find('.del').attr('dataIndex');
-									//alert(cart_id);
-									$.post("{:url('index/cart/updateCount')}",{'count':total,'cart_id':cart_id},function(data){
+									if(n!=0){
+										if($(this).find('.checks').prop('checked')){
+											count = $(this).find('.val').val();
+											p = Number($(this).find('.real_price').html().substr(1));
+											price = price+(p*count);
+											n++;
+											//alert(price);
+										}
+										$('.fz24').html(price);
+										$('.goods_num').html(n);
+										// 写入商品数目
+										var total = $(this).find('.val').val();
+										var cart_id = $(this).find('.del').attr('dataIndex');
+										//alert(cart_id);
+										$.post("{:url('index/cart/updateCount')}",{'count':total,'cart_id':cart_id},function(data){
 
-									});
+										});
+									}
+									n++;
 								});
 							});
 							$('body').on('click','.del',function(){

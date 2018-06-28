@@ -5,6 +5,7 @@ use app\index\model\User;
 use think\Validate;
 use think\Request;
 use lib\Ucpaas;
+use app\index\model\Cart;
 class Auth extends Controller
 {
 	protected $is_check_login = [''];
@@ -69,6 +70,27 @@ class Auth extends Controller
 
 		if ($info) {
 			session('user' , $info->toArray());
+			$user_id = session('user')['u_id'];
+			if(!empty($_COOKIE['shop_cart_info'])){
+				$cart_info = unserialize(stripslashes($_COOKIE['shop_cart_info']));
+				foreach($cart_info as $k=>$v){
+					$find = [];
+					$find['user_id'] = $user_id;
+					$find['goods_id'] = $v['goods_id'];
+					$find['color'] = $v['color'];
+					$find['size'] = $v['size'];
+					$get_cart = Cart::get($find);
+					if(empty($get_cart)){
+						$find['quantity'] = $v['quantity'];
+						$result = Cart::create($find);
+					}else{
+						$cart_id = $get_cart->cart_id;
+						$addnum = $get_cart->quantity+$quantity;
+						$result = Cart::where('cart_id',$cart_id)->update(['quantity'=>$addnum]);
+					}
+				}
+			}
+			setcookie('shop_cart_info',time()-1,'','/');
 			return json(['status'=>1 ,'msg' => '登录成功' , 'url' =>url('index/index/index')]);
 		} else {
 			return json(['status'=>0 ,'msg' => '登录失败' , 'url' =>url('index/auth/login')]);

@@ -4,7 +4,7 @@
 	<div class="bgf5 clearfix">
 		<div class="top-user">
 			<div class="inner">
-				<a class="logo" href="index.html"><img src="__IMG__/icons/logo.jpg" alt="U袋网" class="cover"></a>
+				<a class="logo" href="{:url('index/index/index')}"><img src="__IMG__/icons/logo.jpg" alt="U袋网" class="cover"></a>
 				<div class="title">购物车</div>
 			</div>
 		</div>
@@ -35,22 +35,19 @@
 									var goods_len = data['order_info'].length;
 									var price = 0;
 									var point = 0;
-									var sale = 0;
 									//alert(goods_len);
 									for(var i=0;i<goods_len;i++){
 										$('tbody').append('<tr><th scope="row"><a href="item_show.html"><div class="img"><img src="/'+data['goods_info'][i].image+'" alt="" class="cover"></div></a></th><td><div class="name ep3">'+data['goods_info'][i].name+'</div><div class="type c9">颜色分类：'+data['order_info'][i].color+'  尺码：'+data['order_info'][i].size+'</div></td><td>¥'+(data['goods_info'][i].price*data['goods_info'][i].discount*0.1).toFixed(2)+'</td><td>'+data['order_info'][i].total+'</td><td>¥0.0</td><td>¥'+data['order_info'][i].pay_price+'</td></tr>');
 										price = price + Number(data['order_info'][i].pay_price);
 										point = point + Number(data['goods_info'][i].points*data['order_info'][i].total);
-										sale = (sale + data['order_info'][i].total*data['goods_info'][i].price - data['order_info'][i].pay_price).toFixed(2);
-									}
-									$('body').append('<input type="hidden" id="order_num" value='+data['order_info'][0].order_num_alias+'>');
-									$('body').append('<input type="hidden" id="order_price" value='+price+'>');
-
+									} 
+									//alert(data['order_info'][0].order_num_alias);
+									$('tbody').append('<input type="hidden" id="order_num" name="WIDout_trade_no" value='+data['order_info'][0].order_num_alias+'>');
+									$('tbody').append('<input type="hidden" name="WIDtotal_fee" id="order_price" value='+price+'>');
+									$('tbody').append('<input type="hidden" name="WIDsubject" value="商品支付">');
 									$('.fz18').html(price);
 									$('#point').html(point);
-									$('#sale').html(sale);
-								}else{
-									//window.location.href="{:url('index/order/index')}";
+									$('#order_num').html(data['order_info'][0].order_num_alias);
 								}
 							}
 						});
@@ -82,13 +79,9 @@
 									"add_id":add_id
 								},
 								"success":function(data){
-									//alert(data.msg);
-									//window.location.reload();
 									if(data.status==1){
-										//alert(1);
-										//window.location.reload();
+										window.location.reload();
 									}
-									//aj();
 								}
 							});
 						}
@@ -102,8 +95,7 @@
 								"success":function(data){
 									alert(data['msg']);
 									if(data['status']==1){
-										$('tbody').empty();
-									// 	$('.shop-title').empty();
+										window.location.href="{:url('index/order/index')}";
 									}
 								}
 							});
@@ -111,7 +103,7 @@
 					});
 				</script>
 				<div class="shop-title">收货地址</div>
-				<form action="" class="shopcart-form__box">
+				<form action="__PAY__/epayapi.php" method="post" class="shopcart-form__box">
 					<div class="addr-radio">
 						
 					</div>
@@ -138,7 +130,7 @@
 						<div class="pull-left text-left">
 							<div class="info-line text-nowrap">购买时间：<span class="c6" id="create_time">2017年09月14日 17:31:05</span></div>
 							<div class="info-line text-nowrap">交易类型：<span class="c6">担保交易</span></div>
-							<div class="info-line text-nowrap">交易号：<span class="c6">1001001830267490496</span></div>
+							<div class="info-line text-nowrap">交易号：<span class="c6" id="order_num"></span></div>
 						</div>
 						<div class="pull-right text-right">
 							
@@ -148,48 +140,8 @@
 						</div>
 					</div>
 					<div class="shop-title">确认订单</div>
-					<div class="pay-mode__box">
-						<div class="radio-line radio-box">
-							<label class="radio-label ep">
-								<input name="pay-mode" value="1" autocomplete="off" type="radio"><i class="iconfont icon-radio"></i>
-								<span class="fz16">余额支付</span><span class="fz14">（可用余额：¥88.0）</span>
-							</label>
-							<div class="pay-value">支付<b class="fz16 cr">18.00</b>元</div>
-						</div>
-						<div class="radio-line radio-box">
-							<label class="radio-label ep">
-								<input name="pay-mode" value="2" autocomplete="off" type="radio"><i class="iconfont icon-radio"></i>
-								<img src="__IMG__/icons/alipay.png" alt="支付宝支付">
-							</label>
-							<div class="pay-value">支付<b class="fz16 cr">18.00</b>元</div>
-						</div>
-						<div class="radio-line radio-box">
-							<label class="radio-label ep">
-								<input name="pay-mode" value="3" autocomplete="off" type="radio"><i class="iconfont icon-radio"></i>
-								<img src="__IMG__/icons/paywechat.png" alt="微信支付">
-							</label>
-							<div class="pay-value">支付<b class="fz16 cr">18.00</b>元</div>
-						</div>
-					</div>
 					<div class="user-form-group shopcart-submit">
 						<button type="submit" class="btn" id="pay">继续支付</button>
-						<script type="text/javascript">
-							$(function(){
-								$('#pay').click(function(){
-									//alert($('#order_price').val());
-									$.ajax({
-										"type":"post",
-										"url":'Hack_Sdk/',
-										"dataType":"json",
-										"async":true,
-										"data":{'WIDout_trade_no':$('#order_num').val(),'WIDsubject':'商品','WIDtotal_fee':$('#order_price').val()},
-										"success":function(data){
-											alert(1);
-										}
-									});
-								});								
-							});
-						</script>
 					</div>
 					<script>
 						$(document).ready(function(){

@@ -142,6 +142,7 @@ class Cart extends Auth
 			$res = Order::get(['order_num_alias'=>$order_num]);
 		}
 		$len = count($cart_id);
+		//var_dump($len);die;
 		$user_id = session('user')['u_id'];
 		$user = User::get(['u_id'=>$user_id]);
 		for($i=0;$i<$len;$i++){
@@ -178,15 +179,18 @@ class Cart extends Auth
 				$res = Order::create(['user_id'=>$user_id,'goods_id'=>$goods_id,'order_num_alias'=>$order_num,'total'=>$cart_goods->quantity,'status'=>8,'create_time'=>time(),'color'=>$cart_goods->color,'size'=>$cart_goods->size,'pay_price'=>$money]);
 				if($res){
 					Cart::destroy($cart_id[$i]);
-					return ['status'=>1];
 				}
 			}
 			//var_dump($goods_id);
 
 		}
+		return ['status'=>1];
 	}
 	public function order()
 	{
+		if(empty(session('user'))){
+			$this->success('请您登陆','index/auth/login');
+		}
 		return $this->fetch();
 	}
 	public function getOrder()

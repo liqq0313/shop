@@ -279,6 +279,15 @@ class Order extends Auth
 			return json(['status'=>0,'msg'=>'订单删除失败','url'=>'index/order/index']);
 		}
 	}
+	public function ok()
+	{
+		$trade_status = $_GET['trade_status'];
+		$out_trade_no = $_GET['out_trade_no'];
+		if($trade_status='TRADE_SUCCESS'){
+			Order::where('order_num_alias',$out_trade_no)->update(['status'=>1]);
+		}
+		$this->redirect('index/order/index');
+	}
 	public function joinOrder()
 	{
 		$user_id = session('user')['u_id'];

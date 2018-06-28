@@ -20,7 +20,7 @@ require_once("lib/epay_submit.class.php");
         //需http://格式的完整路径，不能加?id=123这类自定义参数
 
         //页面跳转同步通知页面路径
-        $return_url = "";
+        $return_url = "http://shop.com/index/order/ok";
         //需http://格式的完整路径，不能加?id=123这类自定义参数，不能写成http://localhost/
 
         //商户订单号

@@ -76,9 +76,9 @@
 								{if !empty($pic)}
 								{foreach($pic as $k=>$v)}
 									{if($k==0)}
-										<li class="item active" data-src="__IMG__/{$pic[$k]->data_image}"><img class="cover" src="__IMG__/{$pic[$k]->image}" alt="商品预览图"></li>'
+										<li class="item active" data-src="/{$pic[$k]->data_image}"><img class="cover" src="/{$pic[$k]->image}" alt="商品预览图"></li>'
 									{else}
-										<li class="item" data-src="__IMG__/{$pic[$k]->data_image}"><img class="cover" src="__IMG__/{$pic[$k]->image}" alt="商品预览图"></li>'
+										<li class="item" data-src="/{$pic[$k]->data_image}"><img class="cover" src="/{$pic[$k]->image}" alt="商品预览图"></li>'
 									{/if}
 								{/foreach}
 								{else}

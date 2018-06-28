@@ -122,15 +122,12 @@ class Order extends Auth
 	public function pay()
 	{
 		$id = Request::instance()->param('id');
-		
-		$res = true;
-		if ($res) {
-			Order::where('id',$id)->update(['status'=>1]);
-			$this->success('付款成功' , 'index/order/index');
-		}else{
-			$this->success('付款失败' , 'index/order/index');
-		}
-		
+		$uid = session('user')['u_id'];
+		Order::where('user_id',$uid)->where('status',8)->delete();
+		$info = Order::get(['id'=>$id]);
+		$num = $info->order_num_alias;
+		Order::where('order_num_alias',$num)->update(['status'=>8]);
+		$this->redirect('index/cart/order');
 	}
 
 	//确认收货

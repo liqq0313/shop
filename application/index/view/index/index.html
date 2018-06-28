@@ -62,14 +62,14 @@
 								}else if(flag==2){
 									
 									var oA = $("<a>"+data[child].name+"</a>");
-									oA.attr('href' , "{:url('index/item/show')}?id="+data[child].id);
+									oA.attr('href' , "{:url('index/search/index')}?cid="+data[child].category_id);
 									oA.appendTo(parent);
 								}else if(flag==1){
 									
 									//var oA = $("<li>"+data[child].name+"</li>");
 									//oA.appendTo(parent.parent().prev());
 
-									var oDiv = $("<div class='genre-box clearfix'><span class='title'>"+data[child].name+"</span><div class='genre-list'></div></div>");
+									var oDiv = $("<div class='genre-box clearfix'><a class='title' href='"+"{:url('index/search/index')}?cid="+data[child].category_id+"'>"+data[child].name+"</a><div class='genre-list'></div></div>");
 									
 									oDiv.appendTo(parent);
 

@@ -13,11 +13,11 @@ class Order extends Auth
 	public function index()
 	{
 		$uid = session('user')['u_id'];
-		$totalAll = Order::where('user_id',$uid)->where('status','<>',7)->count();
-		$totalPay = Order::where('user_id',$uid )->where('status',0)->where('status','<>',7)->count();
+		$totalAll = Order::where('user_id',$uid)->where('status','<>',7)->where('status','<>',8)->count();
+		$totalPay = Order::where('user_id',$uid )->where('status',0)->where('status','<>',7)->where('status','<>',8)->count();
 
-		$totalEmit = Order::where('user_id',$uid )->where('status',2)->where('status','<>',7)->count();
-		$totalEval = Order::where('user_id',$uid )->where('status',3)->where('status','<>',7)->count();
+		$totalEmit = Order::where('user_id',$uid )->where('status',2)->where('status','<>',7)->where('status','<>',8)->count();
+		$totalEval = Order::where('user_id',$uid )->where('status',3)->where('status','<>',7)->where('status','<>',8)->count();
 		
 		$this->assign('totalAll' , $totalAll);
 		$this->assign('totalPay' , $totalPay);
@@ -40,22 +40,22 @@ class Order extends Auth
 		$start = ($page-1)*$num;
 		if ($flag==0) {
 			//全部订单
-			$data = Order::where('user_id',$uid)->where('status','<>',7)->order('create_time desc')->limit("$start,$num")->select();
-			$total = Order::where('user_id',$uid)->where('status','<>',7)->count();
+			$data = Order::where('user_id',$uid)->where('status','<>',7)->where('status','<>',8)->order('create_time desc')->limit("$start,$num")->select();
+			$total = Order::where('user_id',$uid)->where('status','<>',7)->where('status','<>',8)->count();
 		}else if($flag==1){
 			//待付款
-			$data = Order::where('user_id',$uid)->where('status',0)->where('status','<>',7)->order('create_time desc')->limit("$start,$num")->select();
-			$total = Order::where('user_id',$uid)->where('status',0)->where('status','<>',7)->count();
+			$data = Order::where('user_id',$uid)->where('status',0)->where('status','<>',7)->where('status','<>',8)->order('create_time desc')->limit("$start,$num")->select();
+			$total = Order::where('user_id',$uid)->where('status',0)->where('status','<>',7)->where('status','<>',8)->count();
 		}else if($flag==2){
 			//待收货
 			
-			$data = Order::where('user_id',$uid)->where('status',2)->where('status','<>',7)->order('create_time desc')->limit("$start,$num")->select();
-			$total = Order::where('user_id',$uid)->where('status',2)->where('status','<>',7)->count();
+			$data = Order::where('user_id',$uid)->where('status',2)->where('status','<>',7)->where('status','<>',8)->order('create_time desc')->limit("$start,$num")->select();
+			$total = Order::where('user_id',$uid)->where('status',2)->where('status','<>',7)->where('status','<>',8)->count();
 		}else if($flag==3){
 			//待评价
 			
-			$data = Order::where('user_id',$uid)->where('status',3)->where('status','<>',7)->order('create_time desc')->limit("$start,$num")->select();
-			$total = Order::where('user_id',$uid)->where('status',3)->where('status','<>',7)->count();
+			$data = Order::where('user_id',$uid)->where('status',3)->where('status','<>',7)->where('status','<>',8)->order('create_time desc')->limit("$start,$num")->select();
+			$total = Order::where('user_id',$uid)->where('status',3)->where('status','<>',7)->where('status','<>',8)->count();
 		}
 		$pageCount = ceil($total/$num);
 

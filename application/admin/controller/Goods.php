@@ -18,7 +18,77 @@ class Goods extends Base
 	public function addGoods()
 	{
 		if (request()->post()) {
-			$insert_data = [];
+			$request = Request::instance();
+			$file = $request->file("image");
+			
+			$fileSlider = $request->file("imageslider");
+			$imagedeta = $request->file('imagedeta');
+			$imagedetaTxt = input('post.imagedetaTxt/a');
+			/*var_dump($imagedeta);var_dump($imagedetaTxt);
+			if (count($imagedetaTxt)!=count($imagedeta)) {
+				return json(['status'=>0,'msg'=>'商品详情必须有描述']);	
+			}
+			return 1;*/
+			$data=$request->param();
+			$model = new UploadFiles();
+			if (empty($data['category'])) {
+	      		return json(['status'=>0,'msg'=>'商品必须选择分类']);	
+	      	}
+			
+			if(isset($file)&&!empty($file)){
+				//封面图
+				$data['image'] = $model->uploadOne($file); 
+	      	}
+	      	
+	      	$goods = new GoodsModel();
+
+      		$data['create_time']=time();
+      		
+      		$result = $goods->allowField(true)->save($data);
+      		$msg = '新增';	      	
+	      	if (!$result) {
+	      		return json(['status'=>0,'msg'=>$msg.'失败']);	
+	      	}
+      		$goods_id = $goods['goods_id'];
+
+      		if(isset($fileSlider)&&!empty($fileSlider)){
+				//轮播图
+				$slider = $model->uploadAll($fileSlider);
+				foreach ($slider as $key=>$value) {
+					$insert_data = [];
+					$insert_data['goods_id'] = $goods_id;
+					$insert_data['image'] = $value['s'];
+					$insert_data['data_image'] = $value['b'];
+					$insert_data['sort_order'] = $key+1;
+					GoodsImage::create($insert_data);
+				}
+	      	}
+	      	if(isset($imagedeta)&&!empty($imagedeta)){
+	      		//详情图
+	      		$deta = $model->uploadAll($imagedeta , 'image/goods' , false);
+	      		if (!is_array($deta)) {
+	      			return json(['status'=>0,'msg'=>$deta]);
+	      		}
+	      		foreach ($deta as $key => $value) {
+	      			$insert_data = [];
+	      			$insert_data['goods_id'] = $goods_id;
+					$insert_data['image'] = $value['b'];
+					$insert_data['sort'] = $key+1;
+					$insert_data['description'] = $imagedetaTxt[$key];
+					GoodsDetail::create($insert_data);
+	      		}
+	      	}
+
+      		
+	      	if ($data['category'] && $goods_id) {
+	      		$tmp = [];
+	      		$tmp['goods_id'] = $goods_id;
+	      		$tmp['category_id'] = $data['category'];
+	      		GoodsToCategory::create($tmp);
+	      	}
+
+	      	return json(['status'=>1,'msg'=>$msg.'成功']);
+
 			
     	} else {
     		$this->assign('title' , '新增');

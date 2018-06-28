@@ -298,6 +298,7 @@ body {overflow-y: scroll}
 	background-color: rgba(48, 48, 48, .8);
 	padding: 0 10px;
 	width: 100%;
+	height: 450px;
 }
 .genre-box > .title {
 	color: #fff;
